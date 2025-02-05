@@ -17,14 +17,14 @@ namespace Random_FloatingTool
         public ToolBox toolBox;
         public double startX, startY;
         public bool isWindowToggled = false;
-        public double centerX;
+        public double centerX,centerY;
         public MainWindow()
         {
             InitializeComponent();
             this.Opacity = 0.8;
 
-            // 获取屏幕宽度
             centerX = SystemParameters.PrimaryScreenWidth / 2;
+            centerY = SystemParameters.PrimaryScreenHeight / 2;
         }
 
         private void ToggleToolBox()
@@ -36,13 +36,20 @@ namespace Random_FloatingTool
                 if (this.Left <= centerX)
                 {
                     toolBox.Left = this.Left + this.Width + 20;
-                    toolBox.Top = this.Top;
                 }
                 else
                 {
                     toolBox.Left = this.Left - toolBox.Width - 20;
+                }
+                if(this.Top <= centerY)
+                {
                     toolBox.Top = this.Top;
                 }
+                else
+                {
+                    toolBox.Top = this.Top - toolBox.Height + this.Height;
+                }
+
                 toolBox.Show();
             }
             else
@@ -81,12 +88,18 @@ namespace Random_FloatingTool
                 if (this.Left <= centerX)
                 {
                     toolBox.Left = this.Left + this.Width + 20;
-                    toolBox.Top = this.Top;
                 }
                 else
                 {
                     toolBox.Left = this.Left - toolBox.Width - 20;
+                }
+                if (this.Top <= centerY)
+                {
                     toolBox.Top = this.Top;
+                }
+                else
+                {
+                    toolBox.Top = this.Top - toolBox.Height + this.Height;
                 }
             }
         }
