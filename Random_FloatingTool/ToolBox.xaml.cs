@@ -44,13 +44,13 @@ namespace Random_FloatingTool
             if (File.Exists(listPath))
             {
                 StreamReader listReader = new(listPath);
-                numOfList = Convert.ToInt32(listReader.ReadLine());//读取列表数
+                numOfList = Convert.ToInt16(listReader.ReadLine());//读取列表数
                 int groupCount;
                 for (groupCount = 0; groupCount < numOfList; groupCount++)
                 {
                     int numOfItem;
                     nameOfGroup[groupCount] = listReader.ReadLine();
-                    numOfItem = Convert.ToInt32(listReader.ReadLine());
+                    numOfItem = Convert.ToInt16(listReader.ReadLine());
                     itemsInGroup[groupCount] = numOfItem;
                     listmode_combobox.Items.Add(nameOfGroup[groupCount]);
                     int itemReadingCount;
@@ -72,32 +72,53 @@ namespace Random_FloatingTool
         {
             Random random = new Random();
             if (currectmode == "nummode")
-                Result.Text = random.Next(Convert.ToUInt16(nummode_number_min.Text), Convert.ToUInt16(nummode_number_max.Text)).ToString() + " 被抽中了";
+                Result.Text = random.Next(Convert.ToInt16(nummode_number_min.Text), Convert.ToInt16(nummode_number_max.Text)).ToString() + " 被抽中了";
             else if (currectmode == "listmode")
             {
                 Result.Text = item[listmode_combobox.SelectedIndex, random.Next(0, itemsInGroup[listmode_combobox.SelectedIndex])] + " 被抽中了";
             }
         }
 
-        private void min_minus(object sender, RoutedEventArgs e)
+        private void min_minus_left(object sender, RoutedEventArgs e)
         {
-            nummode_number_min.Text = (Convert.ToUInt16(nummode_number_min.Text) - 1).ToString();
+            nummode_number_min.Text = (Convert.ToInt16(nummode_number_min.Text) - 1).ToString();
         }
 
-        private void min_plus(object sender, RoutedEventArgs e)
+        private void min_minus_right(object sender, MouseButtonEventArgs e)
         {
-            nummode_number_min.Text = (Convert.ToUInt16(nummode_number_min.Text) + 1).ToString();
+            nummode_number_min.Text = (Convert.ToInt16(nummode_number_min.Text) - 10).ToString();
         }
 
-        private void max_minus(object sender, RoutedEventArgs e)
+        private void min_plus_left(object sender, RoutedEventArgs e)
         {
-            nummode_number_max.Text = (Convert.ToUInt16(nummode_number_max.Text) - 1).ToString();
+            nummode_number_min.Text = (Convert.ToInt16(nummode_number_min.Text) + 1).ToString();
         }
 
-        private void max_plus(object sender, RoutedEventArgs e)
+        private void min_plus_right(object sender, MouseButtonEventArgs e)
         {
-            nummode_number_max.Text = (Convert.ToUInt16(nummode_number_max.Text) + 1).ToString();
+            nummode_number_min.Text = (Convert.ToInt16(nummode_number_min.Text) + 10).ToString();
         }
+
+        private void max_minus_left(object sender, RoutedEventArgs e)
+        {
+            nummode_number_max.Text = (Convert.ToInt16(nummode_number_max.Text) - 1).ToString();
+        }
+
+        private void max_minus_right(object sender, MouseButtonEventArgs e)
+        {
+            nummode_number_max.Text = (Convert.ToInt16(nummode_number_max.Text) - 10).ToString();
+        }
+
+        private void max_plus_left(object sender, RoutedEventArgs e)
+        {
+            nummode_number_max.Text = (Convert.ToInt16(nummode_number_max.Text) + 1).ToString();
+        }
+
+        private void max_plus_right(object sender, MouseButtonEventArgs e)
+        {
+            nummode_number_max.Text = (Convert.ToInt16(nummode_number_max.Text) + 10).ToString();
+        }
+
 
         public void nummode_hide()
         {
