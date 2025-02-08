@@ -27,7 +27,7 @@ namespace Random_FloatingTool
             centerY = SystemParameters.PrimaryScreenHeight / 2;
         }
 
-        private void ToggleToolBox()
+        public void ToggleToolBox()
         {
             if (toolBox == null)
             {

@@ -41,13 +41,16 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <Image x:Name="close_button" Source="close.png" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8" Grid.Column="1" MouseRightButtonUp="close_app"/>
+            <Image x:Name="close_button" Source="close.png" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8" Grid.Column="1" MouseDown="close_button_Click"/>
         </Grid>
 
         <TextBlock x:Name="nummode_text_min" Text="最小值" Grid.Row ="1" Grid.Column="0" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" FontSize="18"/>
         <TextBlock x:Name="nummode_text_max" Text="最大值" Grid.Row ="2" Grid.Column="0" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" FontSize="18"/>
 
-        <Button x:Name="RandomButton" Content="Random" Grid.Row="3" Grid.Column="0" Background="White" Foreground="Black" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="6" FontSize="18" BorderThickness="0,0,0,0" Click="RandomButton_Click"/>
+        <Button x:Name="RandomButton" Content="抽取" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Background="White" Foreground="Black" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="6" Padding="2" FontSize="18" BorderThickness="0,0,0,0" Click="RandomButton_Click"/>
+        <Button x:Name="FinishButton" Content="完成" Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Background="White" Foreground="Black" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="6" Padding="2" FontSize="18" BorderThickness="0,0,0,0" Click="FinishButton_Click" Visibility="Hidden"/>
+
+        <TextBox x:Name="Result" Grid.RowSpan="4" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" Background="#00000000" IsReadOnly="True" BorderThickness="0,0,0,0" FontSize="24"/>
 
         <Grid Grid.Row="1" Grid.Column="1">
             <Grid.ColumnDefinitions>
@@ -76,7 +79,6 @@
         </Grid>
 
 
-        <TextBox x:Name="Result" Grid.Row="3" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" Background="#00000000" IsReadOnly="True" BorderThickness="0,0,0,0" FontSize="18"/>
 
         <TextBlock x:Name="listmode_text" Text="列表" Grid.Row ="1" Grid.Column="0" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" FontSize="18" Visibility="Hidden"/>
         <ComboBox x:Name="listmode_combobox" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="6" FontSize="16" Visibility="Hidden"/>

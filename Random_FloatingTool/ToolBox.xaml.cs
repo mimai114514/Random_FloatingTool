@@ -22,6 +22,8 @@ namespace Random_FloatingTool
     /// </summary>
     public partial class ToolBox : Window
     {
+        
+
         public string currectmode = "nummode";
 
         public string folderPath = "C:\\Users\\Infinity\\Documents\\dev\\RandomUWP";
@@ -77,6 +79,11 @@ namespace Random_FloatingTool
             {
                 Result.Text = item[listmode_combobox.SelectedIndex, random.Next(0, itemsInGroup[listmode_combobox.SelectedIndex])] + " 被抽中了";
             }
+            nummode_hide();
+            listmode_hide();
+            Result.Visibility = Visibility.Visible;
+            RandomButton.Visibility = Visibility.Hidden;
+            FinishButton.Visibility = Visibility.Visible;
         }
 
         private void min_minus_left(object sender, RoutedEventArgs e)
@@ -130,7 +137,7 @@ namespace Random_FloatingTool
             nummode_button_max_plus.Visibility = Visibility.Hidden;
             nummode_text_min.Visibility = Visibility.Hidden;
             nummode_text_max.Visibility = Visibility.Hidden;
-            image_nummode.Source = new BitmapImage(new Uri("nummode.png", UriKind.Relative));
+            
         }
 
         public void nummode_show()
@@ -143,27 +150,29 @@ namespace Random_FloatingTool
             nummode_button_max_plus.Visibility = Visibility.Visible;
             nummode_text_min.Visibility = Visibility.Visible;
             nummode_text_max.Visibility = Visibility.Visible;
-            image_nummode.Source = new BitmapImage(new Uri("nummode_sel.png", UriKind.Relative));
+            
         }
 
         public void listmode_show()
         {
             listmode_text.Visibility = Visibility.Visible;
             listmode_combobox.Visibility = Visibility.Visible;
-            image_listmode.Source = new BitmapImage(new Uri("listmode_sel.png", UriKind.Relative));
+            
         }
 
         public void listmode_hide()
         {
             listmode_text.Visibility = Visibility.Hidden;
             listmode_combobox.Visibility = Visibility.Hidden;
-            image_listmode.Source = new BitmapImage(new Uri("listmode.png", UriKind.Relative));
+            
         }
 
         private void nummode(object sender, MouseButtonEventArgs e)
         {
             nummode_show();
             listmode_hide();
+            image_nummode.Source = new BitmapImage(new Uri("nummode_sel.png", UriKind.Relative));
+            image_listmode.Source = new BitmapImage(new Uri("listmode.png", UriKind.Relative));
             currectmode = "nummode";
         }
 
@@ -171,18 +180,37 @@ namespace Random_FloatingTool
         {
             nummode_hide();
             listmode_show();
+            image_nummode.Source = new BitmapImage(new Uri("nummode.png", UriKind.Relative));
+            image_listmode.Source = new BitmapImage(new Uri("listmode_sel.png", UriKind.Relative));
             currectmode = "listmode";
         }
-
-        private void close_app(object sender, MouseButtonEventArgs e)
+        private void close_button_Click(object sender, MouseButtonEventArgs e)
         {
-            Random_FloatingTool.App.Current.Shutdown();
+            if (e.RightButton == MouseButtonState.Pressed)
+                Random_FloatingTool.App.Current.Shutdown();
+            else
+                this.Visibility = Visibility.Hidden;
         }
+
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             listmode_combobox.SelectedItem = listmode_combobox.Items[0];
         }
 
+        private void FinishButton_Click(object sender, RoutedEventArgs e)
+        {
+            Result.Visibility= Visibility.Hidden;
+            if(currectmode=="nummode")
+            {
+                nummode_show();
+            }
+            else if(currectmode=="listmode")
+            {
+                listmode_show();
+            }
+            RandomButton.Visibility = Visibility.Visible;
+            FinishButton.Visibility = Visibility.Hidden;
+        }
     }
 }
