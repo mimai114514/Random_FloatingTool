@@ -26,8 +26,10 @@ namespace Random_FloatingTool
 
         public string currectmode = "nummode";
 
-        public string folderPath = "C:\\Users\\Infinity\\Documents\\dev\\RandomUWP";
-        public string listPath = "C:\\Users\\Infinity\\Documents\\dev\\RandomUWP\\list.txt";
+
+        public string userFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+        public string folderPath = "\\dev\\RandomUWP";
+        public string listPath = "\\dev\\RandomUWP\\list.txt";
 
         public int numOfList;//列表数
         public int[] itemsInGroup = new int[110];//列表内项数
@@ -38,14 +40,14 @@ namespace Random_FloatingTool
         {
             InitializeComponent();
 
-            if (!Directory.Exists(folderPath))
+            if (!Directory.Exists(userFolder + folderPath))
             {
-                Directory.CreateDirectory(folderPath);
+                Directory.CreateDirectory(userFolder + folderPath);
             }
 
-            if (File.Exists(listPath))
+            if (File.Exists(userFolder + listPath))
             {
-                StreamReader listReader = new(listPath);
+                StreamReader listReader = new(userFolder + listPath);
                 numOfList = Convert.ToInt16(listReader.ReadLine());//读取列表数
                 int groupCount;
                 for (groupCount = 0; groupCount < numOfList; groupCount++)
