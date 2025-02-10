@@ -171,6 +171,7 @@ namespace Random_FloatingTool
 
         private void nummode(object sender, MouseButtonEventArgs e)
         {
+            clearResult();
             nummode_show();
             listmode_hide();
             image_nummode.Source = new BitmapImage(new Uri("nummode_sel.png", UriKind.Relative));
@@ -180,18 +181,38 @@ namespace Random_FloatingTool
 
         private void listmode(object sender, MouseButtonEventArgs e)
         {
+            clearResult();
             nummode_hide();
             listmode_show();
             image_nummode.Source = new BitmapImage(new Uri("nummode.png", UriKind.Relative));
             image_listmode.Source = new BitmapImage(new Uri("listmode_sel.png", UriKind.Relative));
             currectmode = "listmode";
         }
+
+        public void clearResult()
+        {
+            Result.Visibility = Visibility.Hidden;
+            if (currectmode == "nummode")
+            {
+                nummode_show();
+            }
+            else if (currectmode == "listmode")
+            {
+                listmode_show();
+            }
+            RandomButton.Visibility = Visibility.Visible;
+            FinishButton.Visibility = Visibility.Hidden;
+        }
+
         private void close_button_Click(object sender, MouseButtonEventArgs e)
         {
             if (e.RightButton == MouseButtonState.Pressed)
                 Random_FloatingTool.App.Current.Shutdown();
             else
-                this.Visibility = Visibility.Hidden;
+            {
+                clearResult();
+                this.Visibility= Visibility.Hidden;
+            }
         }
 
 
@@ -202,17 +223,8 @@ namespace Random_FloatingTool
 
         private void FinishButton_Click(object sender, RoutedEventArgs e)
         {
-            Result.Visibility= Visibility.Hidden;
-            if(currectmode=="nummode")
-            {
-                nummode_show();
-            }
-            else if(currectmode=="listmode")
-            {
-                listmode_show();
-            }
-            RandomButton.Visibility = Visibility.Visible;
-            FinishButton.Visibility = Visibility.Hidden;
+            clearResult();
         }
+
     }
 }
