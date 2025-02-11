@@ -24,7 +24,7 @@ namespace Random_FloatingTool
     {
         
 
-        public string currectmode = "nummode";
+        public string currectmode = "listmode";
 
 
         public string userFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
@@ -69,6 +69,7 @@ namespace Random_FloatingTool
                 listmode_combobox.Items.Add("无列表文件");
             }
 
+            modeChange();
             
         }
 
@@ -171,34 +172,35 @@ namespace Random_FloatingTool
 
         private void nummode(object sender, MouseButtonEventArgs e)
         {
-            clearResult();
-            nummode_show();
-            listmode_hide();
-            image_nummode.Source = new BitmapImage(new Uri("nummode_sel.png", UriKind.Relative));
-            image_listmode.Source = new BitmapImage(new Uri("listmode.png", UriKind.Relative));
             currectmode = "nummode";
+            modeChange();
         }
 
         private void listmode(object sender, MouseButtonEventArgs e)
         {
-            clearResult();
-            nummode_hide();
-            listmode_show();
-            image_nummode.Source = new BitmapImage(new Uri("nummode.png", UriKind.Relative));
-            image_listmode.Source = new BitmapImage(new Uri("listmode_sel.png", UriKind.Relative));
             currectmode = "listmode";
+            modeChange();
         }
 
-        public void clearResult()
+
+        public void modeChange()
         {
             Result.Visibility = Visibility.Hidden;
             if (currectmode == "nummode")
             {
                 nummode_show();
+                listmode_hide();
+                image_nummode.Source = new BitmapImage(new Uri("nummode_sel.png", UriKind.Relative));
+                image_listmode.Source = new BitmapImage(new Uri("listmode.png", UriKind.Relative));
+                currectmode = "nummode";
             }
             else if (currectmode == "listmode")
             {
+                nummode_hide();
                 listmode_show();
+                image_nummode.Source = new BitmapImage(new Uri("nummode.png", UriKind.Relative));
+                image_listmode.Source = new BitmapImage(new Uri("listmode_sel.png", UriKind.Relative));
+                currectmode = "listmode";
             }
             RandomButton.Visibility = Visibility.Visible;
             FinishButton.Visibility = Visibility.Hidden;
@@ -210,7 +212,7 @@ namespace Random_FloatingTool
                 Random_FloatingTool.App.Current.Shutdown();
             else
             {
-                clearResult();
+                modeChange();
                 this.Visibility= Visibility.Hidden;
             }
         }
@@ -223,7 +225,7 @@ namespace Random_FloatingTool
 
         private void FinishButton_Click(object sender, RoutedEventArgs e)
         {
-            clearResult();
+            modeChange();
         }
 
     }
