@@ -28,8 +28,9 @@ namespace Random_FloatingTool
 
 
         public string userFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-        public string folderPath = "\\dev\\RandomUWP";
-        public string listPath = "\\dev\\RandomUWP\\list.txt";
+        public string appFolder = "\\dev\\RandomUWP";
+        public string listPath = "\\list.txt";
+        public string logPath = "\\log.txt";
 
         public int numOfList;//列表数
         public int[] itemsInGroup = new int[110];//列表内项数
@@ -40,14 +41,14 @@ namespace Random_FloatingTool
         {
             InitializeComponent();
 
-            if (!Directory.Exists(userFolder + folderPath))
+            if (!Directory.Exists(userFolder + appFolder))
             {
-                Directory.CreateDirectory(userFolder + folderPath);
+                Directory.CreateDirectory(userFolder + appFolder);
             }
 
-            if (File.Exists(userFolder + listPath))
+            if (File.Exists(userFolder + appFolder + listPath))
             {
-                StreamReader listReader = new(userFolder + listPath);
+                StreamReader listReader = new(userFolder + appFolder + listPath);
                 numOfList = Convert.ToInt16(listReader.ReadLine());//读取列表数
                 int groupCount;
                 for (groupCount = 0; groupCount < numOfList; groupCount++)
@@ -69,19 +70,30 @@ namespace Random_FloatingTool
                 listmode_combobox.Items.Add("无列表文件");
             }
 
+            if(!File.Exists(userFolder+appFolder+logPath))
+            {
+                File.Create(userFolder + appFolder + logPath);
+            }
+
             modeChange();
             
         }
 
         private void RandomButton_Click(object sender, RoutedEventArgs e)
         {
+            StreamWriter logWriter = new(userFolder + appFolder + logPath,true);
             Random random = new Random();
             if (currectmode == "nummode")
+            {
                 Result.Text = random.Next(Convert.ToInt16(nummode_number_min.Text), Convert.ToInt16(nummode_number_max.Text)).ToString() + " 被抽中了";
+                
+            }
             else if (currectmode == "listmode")
             {
                 Result.Text = item[listmode_combobox.SelectedIndex, random.Next(0, itemsInGroup[listmode_combobox.SelectedIndex])] + " 被抽中了";
             }
+            logWriter.WriteLine(DateTime.Now.ToString() + " " + Result.Text);
+            logWriter.Close();
             nummode_hide();
             listmode_hide();
             Result.Visibility = Visibility.Visible;
