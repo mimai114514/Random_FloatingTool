@@ -17,6 +17,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="WPF-UI" Version="4.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <Resource Include="close.png" />
     <Resource Include="icon.png" />
     <Resource Include="listmode.png" />
