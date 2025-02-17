@@ -1,4 +1,5 @@
-﻿using System.Text;
+﻿using System.Diagnostics;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -20,6 +21,11 @@ namespace Random_FloatingTool
         public double centerX,centerY;
         public MainWindow()
         {
+            string processName = Process.GetCurrentProcess().ProcessName;
+            if(Process.GetProcessesByName(processName).Length > 1)
+            {
+                Application.Current.Shutdown();
+            }
             InitializeComponent();
             this.Opacity = 0.8;
             this.Left = 100;
