@@ -22,7 +22,8 @@ namespace Random_FloatingTool
         {
             InitializeComponent();
             this.Opacity = 0.8;
-
+            this.Left = 100;
+            this.Top = SystemParameters.PrimaryScreenHeight - this.Height - 100;
             centerX = SystemParameters.PrimaryScreenWidth / 2;
             centerY = SystemParameters.PrimaryScreenHeight / 2;
         }
