@@ -14,6 +14,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Threading.Tasks;
+using System.Windows.Threading;
+using System.Reflection.Emit;
 
 namespace Random_FloatingTool
 {
@@ -37,9 +39,12 @@ namespace Random_FloatingTool
         public string[] nameOfGroup = new string[110];
         public string[,] item = new string[110, 1010];//内容列表
 
+        public DispatcherTimer _flashTimer;
+
         public ToolBox()
         {
             InitializeComponent();
+            InitializeTimer();
 
             if (!Directory.Exists(userFolder + appFolder))
             {
@@ -78,27 +83,38 @@ namespace Random_FloatingTool
             modeChange();
             
         }
-
-        private void RandomButton_Click(object sender, RoutedEventArgs e)
+        private void InitializeTimer()
         {
-            StreamWriter logWriter = new(userFolder + appFolder + logPath,true);
+            _flashTimer = new DispatcherTimer();
+            _flashTimer.Tick += FlashTimer_Tick;
+            _flashTimer.Interval = TimeSpan.FromSeconds(0.02);
+        }
+
+        private void FlashTimer_Tick(object sender, EventArgs e)
+        {
             Random random = new Random();
             if (currectmode == "nummode")
             {
-                Result.Text = random.Next(Convert.ToInt16(nummode_number_min.Text), Convert.ToInt16(nummode_number_max.Text)).ToString() + " 被抽中了";
-                
+                Result.Text = random.Next(Convert.ToInt16(nummode_number_min.Text), Convert.ToInt16(nummode_number_max.Text)).ToString();
+
             }
             else if (currectmode == "listmode")
             {
-                Result.Text = item[listmode_combobox.SelectedIndex, random.Next(0, itemsInGroup[listmode_combobox.SelectedIndex])] + " 被抽中了";
+                Result.Text = item[listmode_combobox.SelectedIndex, random.Next(0, itemsInGroup[listmode_combobox.SelectedIndex])];
             }
-            logWriter.WriteLine(DateTime.Now.ToString() + " " + Result.Text);
-            logWriter.Close();
+        }
+
+        private void RandomButton_Click(object sender, RoutedEventArgs e)
+        {
+            Random random = new Random();
+            _flashTimer.Start();
+            RandomButton.Visibility = Visibility.Hidden;
+            StopButton.Visibility = Visibility.Visible;
             nummode_hide();
             listmode_hide();
             Result.Visibility = Visibility.Visible;
-            RandomButton.Visibility = Visibility.Hidden;
-            FinishButton.Visibility = Visibility.Visible;
+            Result_Side.Visibility = Visibility.Visible;
+            Result_Side.Text = "被抽中的是..";
         }
 
         private void min_minus_left(object sender, RoutedEventArgs e)
@@ -197,7 +213,9 @@ namespace Random_FloatingTool
 
         public void modeChange()
         {
+            _flashTimer.Stop();
             Result.Visibility = Visibility.Hidden;
+            Result_Side.Visibility = Visibility.Hidden;
             if (currectmode == "nummode")
             {
                 nummode_show();
@@ -215,6 +233,7 @@ namespace Random_FloatingTool
                 currectmode = "listmode";
             }
             RandomButton.Visibility = Visibility.Visible;
+            StopButton.Visibility = Visibility.Hidden;
             FinishButton.Visibility = Visibility.Hidden;
         }
 
@@ -235,10 +254,21 @@ namespace Random_FloatingTool
             listmode_combobox.SelectedItem = listmode_combobox.Items[0];
         }
 
-        private void FinishButton_Click(object sender, RoutedEventArgs e)
+        private void StopButton_Click(object sender, RoutedEventArgs e)
         {
-            modeChange();
+            _flashTimer.Stop();
+            Result_Side.Text = "被抽中的是:";
+            StreamWriter logWriter = new(userFolder + appFolder + logPath, true);
+            logWriter.AutoFlush = true;
+            logWriter.WriteLine(DateTime.Now.ToString() + " " +Result_Side.Text + Result.Text);
+            StopButton.Visibility = Visibility.Hidden;
+            FinishButton.Visibility= Visibility.Visible;
         }
 
+        private void FinishButton_Click(object sender, RoutedEventArgs e)
+        {
+            FinishButton.Visibility = Visibility.Hidden;
+            modeChange();
+        }
     }
 }
