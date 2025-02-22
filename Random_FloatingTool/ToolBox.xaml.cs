@@ -95,7 +95,7 @@ namespace Random_FloatingTool
             Random random = new Random();
             if (currectmode == "nummode")
             {
-                Result.Text = random.Next(Convert.ToInt16(nummode_number_min.Text), Convert.ToInt16(nummode_number_max.Text)).ToString();
+                Result.Text = random.Next(Convert.ToInt16(nummode_min.Value), Convert.ToInt16(nummode_max.Value)).ToString();
 
             }
             else if (currectmode == "listmode")
@@ -117,55 +117,10 @@ namespace Random_FloatingTool
             Result_Side.Text = "被抽中的是..";
         }
 
-        private void min_minus_left(object sender, RoutedEventArgs e)
-        {
-            nummode_number_min.Text = (Convert.ToInt16(nummode_number_min.Text) - 1).ToString();
-        }
-
-        private void min_minus_right(object sender, MouseButtonEventArgs e)
-        {
-            nummode_number_min.Text = (Convert.ToInt16(nummode_number_min.Text) - 10).ToString();
-        }
-
-        private void min_plus_left(object sender, RoutedEventArgs e)
-        {
-            nummode_number_min.Text = (Convert.ToInt16(nummode_number_min.Text) + 1).ToString();
-        }
-
-        private void min_plus_right(object sender, MouseButtonEventArgs e)
-        {
-            nummode_number_min.Text = (Convert.ToInt16(nummode_number_min.Text) + 10).ToString();
-        }
-
-        private void max_minus_left(object sender, RoutedEventArgs e)
-        {
-            nummode_number_max.Text = (Convert.ToInt16(nummode_number_max.Text) - 1).ToString();
-        }
-
-        private void max_minus_right(object sender, MouseButtonEventArgs e)
-        {
-            nummode_number_max.Text = (Convert.ToInt16(nummode_number_max.Text) - 10).ToString();
-        }
-
-        private void max_plus_left(object sender, RoutedEventArgs e)
-        {
-            nummode_number_max.Text = (Convert.ToInt16(nummode_number_max.Text) + 1).ToString();
-        }
-
-        private void max_plus_right(object sender, MouseButtonEventArgs e)
-        {
-            nummode_number_max.Text = (Convert.ToInt16(nummode_number_max.Text) + 10).ToString();
-        }
-
-
         public void nummode_hide()
         {
-            nummode_number_min.Visibility = Visibility.Hidden;
-            nummode_number_max.Visibility = Visibility.Hidden;
-            nummode_button_min_minus.Visibility = Visibility.Hidden;
-            nummode_button_min_plus.Visibility = Visibility.Hidden;
-            nummode_button_max_minus.Visibility = Visibility.Hidden;
-            nummode_button_max_plus.Visibility = Visibility.Hidden;
+            nummode_min.Visibility = Visibility.Hidden;
+            nummode_max.Visibility = Visibility.Hidden;
             nummode_text_min.Visibility = Visibility.Hidden;
             nummode_text_max.Visibility = Visibility.Hidden;
             
@@ -173,12 +128,8 @@ namespace Random_FloatingTool
 
         public void nummode_show()
         {
-            nummode_number_min.Visibility = Visibility.Visible;
-            nummode_number_max.Visibility = Visibility.Visible;
-            nummode_button_min_minus.Visibility = Visibility.Visible;
-            nummode_button_min_plus.Visibility = Visibility.Visible;
-            nummode_button_max_minus.Visibility = Visibility.Visible;
-            nummode_button_max_plus.Visibility = Visibility.Visible;
+            nummode_min.Visibility = Visibility.Visible;
+            nummode_max.Visibility = Visibility.Visible;
             nummode_text_min.Visibility = Visibility.Visible;
             nummode_text_max.Visibility = Visibility.Visible;
             
@@ -261,6 +212,7 @@ namespace Random_FloatingTool
             StreamWriter logWriter = new(userFolder + appFolder + logPath, true);
             logWriter.AutoFlush = true;
             logWriter.WriteLine(DateTime.Now.ToString() + " " +Result_Side.Text + Result.Text);
+            logWriter.Close();
             StopButton.Visibility = Visibility.Hidden;
             FinishButton.Visibility= Visibility.Visible;
         }

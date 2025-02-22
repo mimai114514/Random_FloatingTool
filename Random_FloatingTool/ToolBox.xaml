@@ -44,7 +44,6 @@
 
             <Image x:Name="close_button" Source="close.png" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="8" Grid.Column="1" MouseDown="close_button_Click"/>
         </Grid>
-
         <TextBlock x:Name="nummode_text_min" Text="最小值" Grid.Row ="1" Grid.Column="0" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" FontSize="18"/>
         <TextBlock x:Name="nummode_text_max" Text="最大值" Grid.Row ="2" Grid.Column="0" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" FontSize="18"/>
 
@@ -55,34 +54,9 @@
         <TextBlock x:Name="Result" Grid.RowSpan="4" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" Background="#00000000" FontSize="24"/>
         <TextBlock x:Name="Result_Side" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="6" Foreground="White" Background="#00000000" FontSize="14" Visibility="Hidden"/>
 
-        <Grid Grid.Row="1" Grid.Column="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <Button x:Name="nummode_button_min_minus" Content="-" Grid.Column="0" Foreground="White" Background="#00000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  FontSize="18" BorderThickness="0,0,0,0" Margin="2" Click="min_minus_left" MouseRightButtonUp="min_minus_right"/>
-            <TextBlock x:Name="nummode_number_min" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" Background="#00000000"  Text="1" FontSize="18"/>
-            <Button x:Name="nummode_button_min_plus" Content="+" Grid.Column="2" Foreground="White" Background="#00000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  FontSize="18" BorderThickness="0,0,0,0" Margin="2" Click="min_plus_left" MouseRightButtonUp="min_plus_right"/>
-
-        </Grid>
-
-        <Grid Grid.Row="2" Grid.Column="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="2*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
-
-            <Button x:Name="nummode_button_max_minus" Content="-" Grid.Column="0" Foreground="White" Background="#00000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  FontSize="18" BorderThickness="0,0,0,0" Margin="2" Click="max_minus_left" MouseRightButtonUp="max_minus_right"/>
-            <TextBlock x:Name="nummode_number_max" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" Background="#00000000"  Text="57" FontSize="18"/>
-            <Button x:Name="nummode_button_max_plus" Content="+" Grid.Column="2" Foreground="White" Background="#00000000" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"  FontSize="18" BorderThickness="0,0,0,0" Margin="2" Click="max_plus_left" MouseRightButtonUp="max_plus_right"/>
-
-        </Grid>
-
-
-
+        <ui:NumberBox x:Name="nummode_min" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" Margin="4" Width="120" Value="1" Cursor="Arrow"/>
+        <ui:NumberBox x:Name="nummode_max" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" Margin="4" Width="120" Cursor="Arrow" Value="57"/>
+        
         <TextBlock x:Name="listmode_text" Text="列表" Grid.Row ="1" Grid.Column="0" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" FontSize="18" Visibility="Hidden"/>
         <ComboBox x:Name="listmode_combobox" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="2" FontSize="16" Visibility="Hidden"/>
 
