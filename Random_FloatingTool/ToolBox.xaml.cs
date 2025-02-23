@@ -149,19 +149,6 @@ namespace Random_FloatingTool
             
         }
 
-        private void nummode(object sender, MouseButtonEventArgs e)
-        {
-            currectmode = "nummode";
-            modeChange();
-        }
-
-        private void listmode(object sender, MouseButtonEventArgs e)
-        {
-            currectmode = "listmode";
-            modeChange();
-        }
-
-
         public void modeChange()
         {
             _flashTimer.Stop();
@@ -171,32 +158,17 @@ namespace Random_FloatingTool
             {
                 nummode_show();
                 listmode_hide();
-                image_nummode.Source = new BitmapImage(new Uri("nummode_sel.png", UriKind.Relative));
-                image_listmode.Source = new BitmapImage(new Uri("listmode.png", UriKind.Relative));
                 currectmode = "nummode";
             }
             else if (currectmode == "listmode")
             {
                 nummode_hide();
                 listmode_show();
-                image_nummode.Source = new BitmapImage(new Uri("nummode.png", UriKind.Relative));
-                image_listmode.Source = new BitmapImage(new Uri("listmode_sel.png", UriKind.Relative));
                 currectmode = "listmode";
             }
             RandomButton.Visibility = Visibility.Visible;
             StopButton.Visibility = Visibility.Hidden;
             FinishButton.Visibility = Visibility.Hidden;
-        }
-
-        private void close_button_Click(object sender, MouseButtonEventArgs e)
-        {
-            if (e.RightButton == MouseButtonState.Pressed)
-                Random_FloatingTool.App.Current.Shutdown();
-            else
-            {
-                modeChange();
-                this.Visibility= Visibility.Hidden;
-            }
         }
 
 
@@ -222,5 +194,30 @@ namespace Random_FloatingTool
             FinishButton.Visibility = Visibility.Hidden;
             modeChange();
         }
+
+        private void nummode_button_Click(object sender, RoutedEventArgs e)
+        {
+            currectmode = "nummode";
+            modeChange();
+        }
+
+        private void listmode_button_Click(object sender, RoutedEventArgs e)
+        {
+            currectmode = "listmode";
+            modeChange();
+        }
+
+
+        private void close_button_Click(object sender, RoutedEventArgs e)
+        {
+            this.Visibility = Visibility.Hidden;
+        }
+
+
+        private void close_button_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
     }
 }
