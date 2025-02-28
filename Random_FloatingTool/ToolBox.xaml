@@ -45,8 +45,8 @@
             <ui:FontIcon FontFamily="Segoe Fluent Icons"  Glyph="&#xE711;"/>
         </ui:Button>
         
-        <TextBlock x:Name="nummode_text_min" Text="最小值" Grid.Row ="1" Grid.Column="0" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" FontSize="18"/>
-        <TextBlock x:Name="nummode_text_max" Text="最大值" Grid.Row ="2" Grid.Column="0" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" FontSize="18"/>
+        <TextBlock x:Name="nummode_text_min" Text="最小值" Grid.Row ="1" Grid.Column="0" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="6,2,2,2" TextAlignment="Center" FontSize="18"/>
+        <TextBlock x:Name="nummode_text_max" Text="最大值" Grid.Row ="2" Grid.Column="0" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="6,2,2,2" TextAlignment="Center" FontSize="18"/>
 
         <Button x:Name="RandomButton" Content="抽取" Grid.Row="3" Grid.Column="1" Foreground="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="6" Padding="2" FontSize="18" BorderThickness="1" Click="RandomButton_Click"/>
         <Button x:Name="StopButton" Content="停止" Grid.Row="3" Grid.Column="1" Foreground="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="6" Padding="2" FontSize="18" BorderThickness="1" Click="StopButton_Click" Visibility="Hidden"/>
@@ -55,11 +55,11 @@
         <TextBlock x:Name="Result" Grid.RowSpan="4" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" Background="#00000000" FontSize="24"/>
         <TextBlock x:Name="Result_Side" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="6" Foreground="White" Background="#00000000" FontSize="14" Visibility="Hidden"/>
 
-        <ui:NumberBox x:Name="nummode_min" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Center" Margin="4" Width="120" Value="1" Cursor="Arrow"/>
-        <ui:NumberBox x:Name="nummode_max" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Center" Margin="4" Width="120" Cursor="Arrow" Value="57"/>
-        
-        <TextBlock x:Name="listmode_text" Text="列表" Grid.Row ="1" Grid.Column="0" Foreground="White" HorizontalAlignment="Center" VerticalAlignment="Center" TextAlignment="Center" FontSize="18" Visibility="Hidden"/>
-        <ComboBox x:Name="listmode_combobox" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="2" FontSize="16" Visibility="Hidden"/>
+        <ui:NumberBox x:Name="nummode_min" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" Margin="4,4,6,4" Width="120" Value="1" Cursor="Arrow"/>
+        <ui:NumberBox x:Name="nummode_max" Grid.Row="2" Grid.Column="1" HorizontalAlignment="Right" Margin="4,4,6,4" Width="120" Cursor="Arrow" Value="57"/>
+
+        <TextBlock x:Name="listmode_text" Text="列表" Grid.Row ="1" Grid.Column="0" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="6,2,2,2" TextAlignment="Center" FontSize="18" Visibility="Hidden"/>
+        <ComboBox x:Name="listmode_combobox" Grid.Row="1" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Stretch" MinWidth="120" Margin="4,4,6,4" FontSize="16"/>
 
     </Grid>
 </Window>

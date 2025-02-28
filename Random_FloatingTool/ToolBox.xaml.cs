@@ -15,7 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Threading.Tasks;
 using System.Windows.Threading;
-using System.Reflection.Emit;
+using System.Timers;
 
 namespace Random_FloatingTool
 {
@@ -24,7 +24,6 @@ namespace Random_FloatingTool
     /// </summary>
     public partial class ToolBox : Window
     {
-        
 
         public string currectmode = "listmode";
 
@@ -40,6 +39,8 @@ namespace Random_FloatingTool
         public string[,] item = new string[110, 1010];//内容列表
 
         public DispatcherTimer _flashTimer;
+        public DispatcherTimer _autoToggleTimer;
+
 
         public ToolBox()
         {
@@ -88,6 +89,9 @@ namespace Random_FloatingTool
             _flashTimer = new DispatcherTimer();
             _flashTimer.Tick += FlashTimer_Tick;
             _flashTimer.Interval = TimeSpan.FromSeconds(0.02);
+            _autoToggleTimer = new DispatcherTimer();
+            _autoToggleTimer.Tick += AutoToggle;
+            _autoToggleTimer.Interval = TimeSpan.FromSeconds(20);
         }
 
         private void FlashTimer_Tick(object sender, EventArgs e)
@@ -102,6 +106,13 @@ namespace Random_FloatingTool
             {
                 Result.Text = item[listmode_combobox.SelectedIndex, random.Next(0, itemsInGroup[listmode_combobox.SelectedIndex])];
             }
+        }
+
+        private void AutoToggle(object sender, EventArgs e)
+        {
+            _autoToggleTimer.Stop();
+            this.Visibility = Visibility.Hidden;
+            modeChange();
         }
 
         private void RandomButton_Click(object sender, RoutedEventArgs e)
@@ -180,6 +191,7 @@ namespace Random_FloatingTool
         private void StopButton_Click(object sender, RoutedEventArgs e)
         {
             _flashTimer.Stop();
+            _autoToggleTimer.Start();
             Result_Side.Text = "被抽中的是:";
             StreamWriter logWriter = new(userFolder + appFolder + logPath, true);
             logWriter.AutoFlush = true;
@@ -192,6 +204,7 @@ namespace Random_FloatingTool
         private void FinishButton_Click(object sender, RoutedEventArgs e)
         {
             FinishButton.Visibility = Visibility.Hidden;
+            _autoToggleTimer.Start();
             modeChange();
         }
 
