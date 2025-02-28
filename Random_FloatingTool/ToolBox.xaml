@@ -32,17 +32,17 @@
                 <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
 
-            <ui:Button x:Name="nummode_button" Grid.Column="0" Grid.Row="0" Margin="4,4,2,4" Padding="5" Click="nummode_button_Click">
-                <ui:FontIcon FontFamily="Segoe Fluent Icons"  Glyph="&#xF146;"/>
+            <ui:Button x:Name="nummode_button" Grid.Column="0" Grid.Row="0" Margin="4,4,2,4" Padding="4" Click="nummode_button_Click">
+                <ui:FontIcon FontFamily="Segoe MDL2 Assets"  Glyph="&#xF146;"/>
             </ui:Button>
 
-            <ui:Button x:Name="listmode_button" Grid.Column="1" Grid.Row="0" Margin="2,4,4,4" Padding="5" Click="listmode_button_Click">
-                <ui:FontIcon FontFamily="Segoe Fluent Icons"  Glyph="&#xE716;"/>
+            <ui:Button x:Name="listmode_button" Grid.Column="1" Grid.Row="0" Margin="2,4,4,4" Padding="4" Click="listmode_button_Click">
+                <ui:FontIcon FontFamily="Segoe MDL2 Assets"  Glyph="&#xE716;"/>
             </ui:Button>
         </Grid>
 
-        <ui:Button x:Name="close_button" Grid.Row="0" Grid.Column="1" Margin="4" Padding="5" HorizontalAlignment="Right" BorderThickness="0,0,0,0" MouseRightButtonUp="close_button_MouseRightButtonUp" Click="close_button_Click">
-            <ui:FontIcon FontFamily="Segoe Fluent Icons"  Glyph="&#xE711;"/>
+        <ui:Button x:Name="close_button" Grid.Row="0" Grid.Column="1" Margin="4" Padding="4" HorizontalAlignment="Right" BorderThickness="0,0,0,0" MouseRightButtonUp="close_button_MouseRightButtonUp" Click="close_button_Click">
+            <ui:FontIcon FontFamily="Segoe MDL2 Assets"  Glyph="&#xE711;"/>
         </ui:Button>
         
         <TextBlock x:Name="nummode_text_min" Text="最小值" Grid.Row ="1" Grid.Column="0" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="6,2,2,2" TextAlignment="Center" FontSize="18"/>

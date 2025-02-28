@@ -72,12 +72,21 @@ namespace Random_FloatingTool
                 }
 
                 toolBox.Show();
+                toolBox.Activate();
             }
             else
             {
-                toolBox.Visibility = toolBox.IsVisible
-                    ? Visibility.Hidden
-                    : Visibility.Visible;
+                if(toolBox.Visibility == Visibility.Hidden)
+                {
+                    toolBox.Visibility = Visibility.Visible;
+                    toolBox.Activate();
+                }
+                else
+                {
+                    toolBox.modeChange();
+                    toolBox.Visibility = Visibility.Hidden;
+
+                }
             }
             isWindowToggled = !isWindowToggled;
         }
@@ -107,6 +116,7 @@ namespace Random_FloatingTool
                 if (msg.message == WM_HOTKEY && (int)msg.wParam == HOTKEY_ID)
                 {
                     ToggleToolBox();
+                    toolBox.RandomButton.Focus();
                 }
             };
         }

@@ -121,6 +121,7 @@ namespace Random_FloatingTool
             _flashTimer.Start();
             RandomButton.Visibility = Visibility.Hidden;
             StopButton.Visibility = Visibility.Visible;
+            StopButton.Focus();
             nummode_hide();
             listmode_hide();
             Result.Visibility = Visibility.Visible;
@@ -178,6 +179,7 @@ namespace Random_FloatingTool
                 currectmode = "listmode";
             }
             RandomButton.Visibility = Visibility.Visible;
+            RandomButton.Focus();
             StopButton.Visibility = Visibility.Hidden;
             FinishButton.Visibility = Visibility.Hidden;
         }
@@ -199,6 +201,7 @@ namespace Random_FloatingTool
             logWriter.Close();
             StopButton.Visibility = Visibility.Hidden;
             FinishButton.Visibility= Visibility.Visible;
+            FinishButton.Focus();
         }
 
         private void FinishButton_Click(object sender, RoutedEventArgs e)
