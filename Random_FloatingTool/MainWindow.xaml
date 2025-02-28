@@ -10,10 +10,11 @@
         AllowsTransparency="True"
         Background="Transparent"
         Topmost="True"
+        
         LocationChanged="MainWindow_LocationChanged"
         ResizeMode="NoResize" WindowState="Normal"
         ShowInTaskbar="False"
-        x:Name="Window1" Icon="logo.png" >
+        x:Name="Window1" Icon="logo.png" Closed="Window_Closed" Loaded="Window_Loaded" >
 
     <Image Name="Logo" Source="icon.png" Stretch="Uniform"
            MouseLeftButtonDown="Logo_MouseLeftButtonDown"

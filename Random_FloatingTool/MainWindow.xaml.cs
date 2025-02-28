@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
+using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
@@ -15,6 +16,19 @@ namespace Random_FloatingTool
 
     public partial class MainWindow : Window
     {
+        //hotkey
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
+
+        private const int HOTKEY_ID = 9000;
+        private const uint MOD_SHIFT = 0x0004;
+        private const uint R_KEY = 0x52;
+        private const uint WM_HOTKEY = 0x0312;
+
+
+
         public ToolBox toolBox;
         public double startX, startY;
         public bool isWindowToggled = false;
@@ -73,6 +87,35 @@ namespace Random_FloatingTool
             startX = Window1.Left;
             startY = Window1.Top;
             ToggleToolBox();
+        }
+
+
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            IntPtr handle = new WindowInteropHelper(this).Handle;
+            bool success = RegisterHotKey(handle, HOTKEY_ID, MOD_SHIFT,R_KEY);
+
+            if (!success)
+            {
+                MessageBox.Show("热键注册失败");
+            }
+
+
+            ComponentDispatcher.ThreadPreprocessMessage += (ref MSG msg, ref bool handled) =>
+            {
+                if (msg.message == WM_HOTKEY && (int)msg.wParam == HOTKEY_ID)
+                {
+                    ToggleToolBox();
+                }
+            };
+        }
+
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            IntPtr handle = new WindowInteropHelper(this).Handle;
+            UnregisterHotKey(handle, HOTKEY_ID);
         }
 
         private void Logo_MouseMove(object sender, MouseEventArgs e)
