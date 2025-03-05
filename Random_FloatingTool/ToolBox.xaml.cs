@@ -91,7 +91,7 @@ namespace Random_FloatingTool
             _flashTimer.Interval = TimeSpan.FromSeconds(0.02);
             _autoToggleTimer = new DispatcherTimer();
             _autoToggleTimer.Tick += AutoToggle;
-            _autoToggleTimer.Interval = TimeSpan.FromSeconds(20);
+            _autoToggleTimer.Interval = TimeSpan.FromSeconds(12.5);
         }
 
         private void FlashTimer_Tick(object sender, EventArgs e)
