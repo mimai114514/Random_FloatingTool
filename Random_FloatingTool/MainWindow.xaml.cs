@@ -46,6 +46,8 @@ namespace Random_FloatingTool
             this.Top = SystemParameters.PrimaryScreenHeight - this.Height - 250;
             centerX = SystemParameters.PrimaryScreenWidth / 2;
             centerY = SystemParameters.PrimaryScreenHeight / 2;
+
+
         }
 
         public void ToggleToolBox()
@@ -95,7 +97,6 @@ namespace Random_FloatingTool
         {
             startX = Window1.Left;
             startY = Window1.Top;
-            ToggleToolBox();
         }
 
 
@@ -119,6 +120,7 @@ namespace Random_FloatingTool
                     toolBox.RandomButton.Focus();
                 }
             };
+
         }
 
 
@@ -128,15 +130,20 @@ namespace Random_FloatingTool
             UnregisterHotKey(handle, HOTKEY_ID);
         }
 
+        private void Logo_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if((Math.Abs(Window1.Left - startX) <20 && (Math.Abs(Window1.Top - startY) < 20)))
+            {
+                ToggleToolBox();
+            }
+        }
+
         private void Logo_MouseMove(object sender, MouseEventArgs e)
         {
+            
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 this.DragMove();
-                if ((Math.Abs(Window1.Left - startX) > 10 || (Math.Abs(Window1.Top - startY) > 10)) && toolBox != null)
-                {
-                    ToggleToolBox();
-                }
             }
         }
 

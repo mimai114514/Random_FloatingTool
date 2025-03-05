@@ -18,7 +18,7 @@
 
     <Image Name="Logo" Source="icon.png" Stretch="Uniform"
            MouseLeftButtonDown="Logo_MouseLeftButtonDown"
-           MouseMove="Logo_MouseMove">
+           MouseMove="Logo_MouseMove" MouseLeftButtonUp="Logo_MouseLeftButtonUp">
         <Image.Clip>
             <EllipseGeometry Center="25,25" RadiusX="25" RadiusY="25"/>
         </Image.Clip>
