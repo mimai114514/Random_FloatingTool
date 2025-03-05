@@ -117,6 +117,7 @@ namespace Random_FloatingTool
 
         private void RandomButton_Click(object sender, RoutedEventArgs e)
         {
+            _autoToggleTimer.Stop();
             Random random = new Random();
             _flashTimer.Start();
             RandomButton.Visibility = Visibility.Hidden;
@@ -226,6 +227,7 @@ namespace Random_FloatingTool
 
         private void close_button_Click(object sender, RoutedEventArgs e)
         {
+            _autoToggleTimer.Stop();
             this.Visibility = Visibility.Hidden;
         }
 
