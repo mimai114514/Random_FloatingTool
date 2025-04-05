@@ -111,8 +111,15 @@ namespace Random_FloatingTool
         private void AutoToggle(object sender, EventArgs e)
         {
             _autoToggleTimer.Stop();
-            this.Visibility = Visibility.Hidden;
-            modeChange();
+            if (this.IsMouseOver)
+            {
+                _autoToggleTimer.Start();
+            }
+            else
+            {
+                this.Visibility = Visibility.Hidden;
+                modeChange();
+            }
         }
 
         private void RandomButton_Click(object sender, RoutedEventArgs e)

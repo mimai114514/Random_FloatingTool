@@ -16,7 +16,7 @@ namespace Random_FloatingTool
 
     public partial class MainWindow : Window
     {
-        //hotkey
+        //键盘热键相关
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         private static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
         [System.Runtime.InteropServices.DllImport("user32.dll")]
@@ -27,6 +27,33 @@ namespace Random_FloatingTool
         private const uint R_KEY = 0x52;
         private const uint WM_HOTKEY = 0x0312;
 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            IntPtr handle = new WindowInteropHelper(this).Handle;
+            bool success = RegisterHotKey(handle, HOTKEY_ID, MOD_SHIFT,R_KEY);
+
+            if (!success)
+            {
+                MessageBox.Show("热键注册失败");
+            }
+
+
+            ComponentDispatcher.ThreadPreprocessMessage += (ref MSG msg, ref bool handled) =>
+            {
+                if (msg.message == WM_HOTKEY && (int)msg.wParam == HOTKEY_ID)
+                {
+                    ToggleToolBox();
+                    toolBox.RandomButton.Focus();  //将焦点设为抽取按钮，方便键盘操作
+                }
+            };
+
+        }
+
+        private void Window_Closed(object sender, EventArgs e)
+        {
+            IntPtr handle = new WindowInteropHelper(this).Handle;
+            UnregisterHotKey(handle, HOTKEY_ID);
+        }
 
 
         public ToolBox toolBox;
@@ -100,39 +127,9 @@ namespace Random_FloatingTool
         }
 
 
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            IntPtr handle = new WindowInteropHelper(this).Handle;
-            bool success = RegisterHotKey(handle, HOTKEY_ID, MOD_SHIFT,R_KEY);
-
-            if (!success)
-            {
-                MessageBox.Show("热键注册失败");
-            }
-
-
-            ComponentDispatcher.ThreadPreprocessMessage += (ref MSG msg, ref bool handled) =>
-            {
-                if (msg.message == WM_HOTKEY && (int)msg.wParam == HOTKEY_ID)
-                {
-                    ToggleToolBox();
-                    toolBox.RandomButton.Focus();
-                }
-            };
-
-        }
-
-
-        private void Window_Closed(object sender, EventArgs e)
-        {
-            IntPtr handle = new WindowInteropHelper(this).Handle;
-            UnregisterHotKey(handle, HOTKEY_ID);
-        }
-
         private void Logo_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if((Math.Abs(Window1.Left - startX) <20 && (Math.Abs(Window1.Top - startY) < 20)))
+            if((Math.Abs(Window1.Left - startX) <20 && (Math.Abs(Window1.Top - startY) < 20))) //鼠标在任一方向均未移动超过20像素时，展开/折叠toolbox
             {
                 ToggleToolBox();
             }
