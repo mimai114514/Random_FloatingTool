@@ -1,6 +1,6 @@
 # 简介
 
-一个小软件，提供一个样式类似希沃白板悬浮工具的悬浮窗来让用户随机抽取一些东西
+一个小软件，提供一个样式悬浮窗来让用户随机抽取一个数字或是列表中的一项
 
 ## 数字模式
 
@@ -23,6 +23,10 @@ WPF+.NET8
 # 版权声明
 
 Copyright 2025 Infinity.(mimai114514)
+
+应用程序图标使用[Emoji Kitchen](https://github.com/xsalazar/emoji-kitchen)生成
+
+悬浮窗的图标修改自Flaticon平台的Hilmy Abiyyu A.创作的[图标](https://www.flaticon.com/free-icons/dice)
 
 Random_FloatingTool是自由软件：你可以再分发之和/或依照由自由软件基金会发布的 GNU 通用公共许可证修改之，无论是版本 3 许可证，还是（按你的决定）任何以后版都可以。
 
