@@ -10,11 +10,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="close.png" />
     <None Remove="icon.png" />
-    <None Remove="listmode.png" />
     <None Remove="logo.png" />
-    <None Remove="open.png" />
   </ItemGroup>
 
   <ItemGroup>
@@ -26,18 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="close.png" />
-    <Resource Include="listmode.png" />
-    <Resource Include="logo.png" />
     <Resource Include="icon.png" />
-    <Resource Include="nummode.png">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="open.png" />
-    <Resource Include="nummode_sel.png">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </Resource>
-    <Resource Include="listmode_sel.png" />
+    <Resource Include="logo.png" />
   </ItemGroup>
 
 </Project>
