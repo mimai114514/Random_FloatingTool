@@ -29,7 +29,7 @@ namespace Random_FloatingTool
 
 
         public string userFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
-        public string appFolder = "\\dev\\RandomUWP";
+        public string appFolder = "\\dev\\Random";
         public string listPath = "\\list.txt";
         public string logPath = "\\log.txt";
 
