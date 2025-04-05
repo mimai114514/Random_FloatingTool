@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Random_FloatingTool"
         mc:Ignorable="d"
-        Title="Random" Height="50" Width="50" 
+        Title="Random" Height="60" Width="60" 
         WindowStyle="None"
         AllowsTransparency="True"
         Background="Transparent"
@@ -14,13 +14,13 @@
         LocationChanged="MainWindow_LocationChanged"
         ResizeMode="NoResize" WindowState="Normal"
         ShowInTaskbar="False"
-        x:Name="Window1" Icon="logo.png" Closed="Window_Closed" Loaded="Window_Loaded" >
+        x:Name="Window1" Icon="logo.png" Closed="Window_Closed" Loaded="Window_Loaded">
 
     <Image Name="Logo" Source="icon.png" Stretch="Uniform"
            MouseLeftButtonDown="Logo_MouseLeftButtonDown"
-           MouseMove="Logo_MouseMove" MouseLeftButtonUp="Logo_MouseLeftButtonUp">
+           MouseMove="Logo_MouseMove" MouseLeftButtonUp="Logo_MouseLeftButtonUp" Opacity="0.6">
         <Image.Clip>
-            <EllipseGeometry Center="25,25" RadiusX="25" RadiusY="25"/>
+            <EllipseGeometry Center="30,30" RadiusX="30" RadiusY="30"/>
         </Image.Clip>
     </Image>
 </Window>

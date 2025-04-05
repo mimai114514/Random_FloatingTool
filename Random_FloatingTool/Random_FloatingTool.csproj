@@ -27,9 +27,9 @@
 
   <ItemGroup>
     <Resource Include="close.png" />
-    <Resource Include="icon.png" />
     <Resource Include="listmode.png" />
     <Resource Include="logo.png" />
+    <Resource Include="icon.png" />
     <Resource Include="nummode.png">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>
