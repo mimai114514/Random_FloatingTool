@@ -9,7 +9,7 @@
         Title="ToolBox"
         WindowStyle="None"
         AllowsTransparency="True"
-        Background="#F0383838"
+        Background="#7A000000"
         Width="230" Height="160"
         Topmost="True" ResizeMode="NoResize" ShowInTaskbar="False" Loaded="Window_Loaded">
     <Grid>
