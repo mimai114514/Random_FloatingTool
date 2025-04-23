@@ -23,14 +23,14 @@ namespace Random_FloatingTool
         private static extern bool UnregisterHotKey(IntPtr hWnd, int id);
 
         private const int HOTKEY_ID = 9000;
-        private const uint MOD_SHIFT = 0x0004;
+        private const uint MOD_ALT = 0x0001;
         private const uint R_KEY = 0x52;
         private const uint WM_HOTKEY = 0x0312;
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             IntPtr handle = new WindowInteropHelper(this).Handle;
-            bool success = RegisterHotKey(handle, HOTKEY_ID, MOD_SHIFT,R_KEY);
+            bool success = RegisterHotKey(handle, HOTKEY_ID, MOD_ALT,R_KEY);
 
             if (!success)
             {
