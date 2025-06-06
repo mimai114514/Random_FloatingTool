@@ -30,7 +30,7 @@ namespace Random_FloatingTool
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             IntPtr handle = new WindowInteropHelper(this).Handle;
-            bool success = RegisterHotKey(handle, HOTKEY_ID, MOD_ALT,R_KEY);
+            bool success = RegisterHotKey(handle, HOTKEY_ID, MOD_ALT, R_KEY);
 
             if (!success)
             {
@@ -59,11 +59,11 @@ namespace Random_FloatingTool
         public ToolBox toolBox;
         public double startX, startY;
         public bool isWindowToggled = false;
-        public double centerX,centerY;
+        public double centerX, centerY;
         public MainWindow()
         {
             string processName = Process.GetCurrentProcess().ProcessName;
-            if(Process.GetProcessesByName(processName).Length > 1)
+            if (Process.GetProcessesByName(processName).Length > 1)
             {
                 Application.Current.Shutdown();
             }
@@ -74,48 +74,41 @@ namespace Random_FloatingTool
             centerX = SystemParameters.PrimaryScreenWidth / 2;
             centerY = SystemParameters.PrimaryScreenHeight / 2;
 
+            toolBox = new ToolBox();
+            if (this.Left <= centerX)
+            {
+                toolBox.Left = this.Left + this.Width + 20;
+            }
+            else
+            {
+                toolBox.Left = this.Left - toolBox.Width - 20;
+            }
+            if (this.Top <= centerY)
+            {
+                toolBox.Top = this.Top;
+            }
+            else
+            {
+                toolBox.Top = this.Top - toolBox.Height + this.Height;
+            }
 
+            toolBox.Show();
+            toolBox.Activate();
         }
 
         public void ToggleToolBox()
         {
-            if (toolBox == null)
-            {
-                toolBox = new ToolBox();
-                toolBox.Owner = this;
-                if (this.Left <= centerX)
-                {
-                    toolBox.Left = this.Left + this.Width + 20;
-                }
-                else
-                {
-                    toolBox.Left = this.Left - toolBox.Width - 20;
-                }
-                if(this.Top <= centerY)
-                {
-                    toolBox.Top = this.Top;
-                }
-                else
-                {
-                    toolBox.Top = this.Top - toolBox.Height + this.Height;
-                }
 
-                toolBox.Show();
+            if (toolBox.Visibility == Visibility.Hidden)
+            {
+                toolBox.Visibility = Visibility.Visible;
                 toolBox.Activate();
             }
             else
             {
-                if(toolBox.Visibility == Visibility.Hidden)
-                {
-                    toolBox.Visibility = Visibility.Visible;
-                    toolBox.Activate();
-                }
-                else
-                {
-                    toolBox.modeChange();
-                    toolBox.Visibility = Visibility.Hidden;
+                toolBox.modeChange();
+                toolBox.Visibility = Visibility.Hidden;
 
-                }
             }
             isWindowToggled = !isWindowToggled;
         }
@@ -129,7 +122,7 @@ namespace Random_FloatingTool
 
         private void Logo_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if((Math.Abs(Window1.Left - startX) <20 && (Math.Abs(Window1.Top - startY) < 20))) //鼠标在任一方向均未移动超过20像素时，展开/折叠toolbox
+            if ((Math.Abs(Window1.Left - startX) < 20 && (Math.Abs(Window1.Top - startY) < 20))) //鼠标在任一方向均未移动超过20像素时，展开/折叠toolbox
             {
                 ToggleToolBox();
             }
@@ -137,7 +130,7 @@ namespace Random_FloatingTool
 
         private void Logo_MouseMove(object sender, MouseEventArgs e)
         {
-            
+
             if (e.LeftButton == MouseButtonState.Pressed)
             {
                 this.DragMove();

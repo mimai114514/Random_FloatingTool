@@ -16,9 +16,374 @@ using System.Windows.Shapes;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using System.Timers;
+using System.Data.SQLite;
+using System.Data.Entity.Core.Common;
 
 namespace Random_FloatingTool
 {
+    public class DatabaseHelper
+    {
+        public string userFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
+        public string appFolder = "\\Random";
+        public string dbFile = "\\random.db";
+        public string appFolderPath => userFolder + appFolder;
+
+        public string databasePath => userFolder + appFolder + dbFile;
+
+        public DatabaseHelper()
+        {
+
+        }
+
+
+
+        //初始化数据库和表结构
+        public void InitializeDatabase()
+        {
+            if (!Directory.Exists(appFolderPath))
+            {
+                Directory.CreateDirectory(appFolderPath);
+            }
+
+            if (!File.Exists(databasePath))
+            {
+                SQLiteConnection.CreateFile(databasePath);
+            }
+
+            using (var connection = new SQLiteConnection($"Data Source={databasePath};Version=3;"))
+            {
+                connection.Open();
+
+                // 创建列表表
+                const string createListTable = @"
+                CREATE TABLE IF NOT EXISTS Lists (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Name TEXT NOT NULL,
+                    UsageCount INTEGER DEFAULT 0,
+                    WeightSum INTEGER
+                );";
+
+                // 创建项表
+                const string createItemsTable = @"
+                CREATE TABLE IF NOT EXISTS Items (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    ListId INTEGER NOT NULL,
+                    Name TEXT NOT NULL,
+                    UsageCount INTEGER DEFAULT 0,
+                    Weight INTEGER DEFAULT 100,
+                    FOREIGN KEY(ListId) REFERENCES Lists(Id)
+                );";
+
+                using (var command = new SQLiteCommand(createListTable, connection))
+                {
+                    command.ExecuteNonQuery();
+                }
+
+                using (var command = new SQLiteCommand(createItemsTable, connection))
+                {
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        //读取所有列表信息
+        public List<ListInfo> GetLists()
+        {
+            var lists = new List<ListInfo>();
+
+            using (var connection = new SQLiteConnection($"Data Source={databasePath};Version=3;"))
+            {
+                connection.Open();
+                const string query = "SELECT Id, Name, UsageCount, WeightSum FROM Lists";
+
+                using (var command = new SQLiteCommand(query, connection))
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        lists.Add(new ListInfo
+                        {
+                            Id = reader.GetInt32(0),
+                            Name = reader.GetString(1),
+                            UsageCount = reader.GetInt32(2),
+                            WeightSum = reader.IsDBNull(3) ? 0 : reader.GetInt32(3)
+                        });
+                    }
+                }
+            }
+            return lists;
+        }
+
+        public string GetListName(int ListId)
+        {
+            string listName;
+
+            using (var connection = new SQLiteConnection($"Data Source={databasePath};Version=3;"))
+            {
+                connection.Open();
+                const string query = "SELECT Name FROM Lists WHERE Id = @ListId";
+
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@ListId", ListId);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        reader.Read();
+                        listName = reader.GetString(0);
+                    }
+                }
+            }
+            return listName;
+        }
+
+        //根据列表ID获取项
+        public List<Item> GetItemsByListId(int listId)
+        {
+            var items = new List<Item>();
+
+            using (var connection = new SQLiteConnection($"Data Source={databasePath};Version=3;"))
+            {
+                connection.Open();
+                const string query = "SELECT Id, Name, UsageCount, Weight FROM Items WHERE ListId = @ListId";
+
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@ListId", listId);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            items.Add(new Item
+                            {
+                                Id = reader.GetInt32(0),
+                                Name = reader.GetString(1),
+                                UsageCount = reader.GetInt32(2),
+                                Weight = reader.GetInt32(3)
+                            });
+                        }
+                    }
+                }
+            }
+            return items;
+        }
+
+        public Item GetItemById(int ItemId)
+        {
+            var item = new Item();
+            using (var connection = new SQLiteConnection($"Data Source={databasePath};Version=3;"))
+            {
+                connection.Open();
+                const string query = "SELECT Id, Name, UsageCount, Weight, ListId FROM Items WHERE Id = @Id";
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Id", ItemId);
+                    using (var reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            item.Id = reader.GetInt32(0);
+                            item.Name = reader.GetString(1);
+                            item.UsageCount = reader.GetInt32(2);
+                            item.Weight = reader.GetInt32(3);
+                            item.ListId = reader.GetInt32(4);
+                        }
+                    }
+                }
+            }
+            return item;
+        }
+
+        public void AddItem(int listId, string itemName)
+        {
+            using (var connection = new SQLiteConnection($"Data Source={databasePath};Version=3;"))
+            {
+                connection.Open();
+                const string query = @"
+                INSERT INTO Items (ListId, Name, UsageCount) 
+                VALUES (@ListId, @Name, 0)";
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@ListId", listId);
+                    command.Parameters.AddWithValue("@Name", itemName);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public int AddList(string listName)
+        {
+            using (var connection = new SQLiteConnection($"Data Source={databasePath};Version=3;"))
+            {
+                connection.Open();
+                const string query = @"
+                INSERT INTO Lists (Name, UsageCount) 
+                VALUES (@Name, 0)";
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Name", listName);
+                    command.ExecuteNonQuery();
+                    return (int)connection.LastInsertRowId;
+                }
+            }
+        }
+
+        public void RenameList(int listId, string newName)
+        {
+            using (var connection = new SQLiteConnection($"Data Source={databasePath};Version=3;"))
+            {
+                connection.Open();
+                const string query = @"
+                UPDATE Lists 
+                SET Name = @Name 
+                WHERE Id = @Id";
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Id", listId);
+                    command.Parameters.AddWithValue("@Name", newName);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void UpdateListWeightSum(int ListId)
+        {
+            List<Item> itemsOfListToUpdate = GetItemsByListId(ListId);
+            int WeightSum = 0;
+            foreach (Item item in itemsOfListToUpdate)
+            {
+                WeightSum += item.Weight;
+            }
+            using (var connection = new SQLiteConnection($"Data Source={databasePath};Version=3;"))
+            {
+                connection.Open();
+                const string query = @"
+                UPDATE Lists 
+                SET WeightSum = @WeightSum 
+                WHERE Id = @Id";
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Id", ListId);
+                    command.Parameters.AddWithValue("@WeightSum", WeightSum);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void DeleteList(int listId)
+        {
+            using (var connection = new SQLiteConnection($"Data Source={databasePath};Version=3;"))
+            {
+                connection.Open();
+                string query = "DELETE FROM Lists WHERE Id = @Id";
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Id", listId);
+                    command.ExecuteNonQuery();
+                }
+                query = "DELETE FROM Items WHERE ListId = @ListId";
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@ListId", listId);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void DeleteItem(int ItemID)
+        {
+            using (var connection = new SQLiteConnection($"Data Source={databasePath};Version=3;"))
+            {
+                connection.Open();
+                const string query = "DELETE FROM Items WHERE Id = @Id";
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Id", ItemID);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        //更新项信息
+        public int UpdateItem(Item item)
+        {
+            using (var connection = new SQLiteConnection($"Data Source={databasePath};Version=3;"))
+            {
+                connection.Open();
+                const string query = @"
+                UPDATE Items 
+                SET Name = @Name, Weight = @Weight 
+                WHERE Id = @Id";
+
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Id", item.Id);
+                    command.Parameters.AddWithValue("@Name", item.Name);
+                    command.Parameters.AddWithValue("@Weight", item.Weight);
+
+                    return command.ExecuteNonQuery();
+                }
+            }
+        }
+
+        public void IncreaseUsageCount(int itemID)
+        {
+            using (var connection = new SQLiteConnection($"Data Source={databasePath};Version=3;"))
+            {
+                connection.Open();
+                const string query_item = @"
+                UPDATE Items 
+                SET UsageCount = UsageCount + 1 
+                WHERE Id = @Id";
+                using (var command = new SQLiteCommand(query_item, connection))
+                {
+                    command.Parameters.AddWithValue("@Id", itemID);
+                    command.ExecuteNonQuery();
+                }
+                const string getListIdQuery = @"
+                SELECT ListId FROM Items WHERE Id = @Id";
+                using (var command = new SQLiteCommand(getListIdQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@Id", itemID);
+                    int listId = Convert.ToInt32(command.ExecuteScalar());
+                    const string query_list = @"
+                    UPDATE Lists 
+                    SET UsageCount = UsageCount + 1 
+                    WHERE Id = @ListId";
+                    using (var listCommand = new SQLiteCommand(query_list, connection))
+                    {
+                        listCommand.Parameters.AddWithValue("@ListId", listId);
+                        listCommand.ExecuteNonQuery();
+                    }
+                }
+            }
+        }
+
+    }
+
+
+
+    // 数据模型类
+    public class ListInfo
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int UsageCount { get; set; }
+        public int WeightSum { get; set; }
+
+
+    }
+
+    public class Item
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int UsageCount { get; set; }
+        public int Weight { get; set; }
+
+        public int ListId { get; set; }
+    }
     public partial class ToolBox : Window
     {
 
@@ -29,14 +394,16 @@ namespace Random_FloatingTool
         public string listPath = "\\list.txt";
         public string logPath = "\\log.txt";
 
-        public int listCount;//列表数
-        public int[] itemCount = new int[110];//列表内项数
-        public string[] nameOfGroup = new string[110];//列表名
-        public string[,] item = new string[110, 1010];//内容列表
+        public int selectedItemIndex;
 
         public DispatcherTimer _flashTimer;//抽取项更新计时器
         public DispatcherTimer _autoToggleTimer;//自动折叠计时器
         public StreamWriter logWriter;
+
+        public DatabaseHelper db;
+        public List<ListInfo> lists;
+        public List<Item> currentList = new List<Item>();
+        public Item[] currentListWithWeight;
 
         public ToolBox()
         {
@@ -44,6 +411,12 @@ namespace Random_FloatingTool
             InitializeTimer();
             InitializeLogWriter();
 
+            db = new DatabaseHelper();
+            db.InitializeDatabase();
+
+            lists = db.GetLists();
+
+            /*
             if (!Directory.Exists(userFolder + appFolder))
             {
                 Directory.CreateDirectory(userFolder + appFolder);
@@ -88,10 +461,22 @@ namespace Random_FloatingTool
             if(!File.Exists(userFolder+appFolder+logPath))
             {
                 File.Create(userFolder + appFolder + logPath);
+            }*/
+
+            foreach (var list in lists)
+            {
+                listmode_combobox.Items.Add(list.Name);
+            }
+
+            if (lists.Count == 0)
+            {
+                listmode_combobox.Items.Add("无列表文件");
+                listmode_combobox.IsEnabled = false;
+                RandomButton.IsEnabled = false;
             }
 
             modeChange();
-            
+
         }
         private void InitializeTimer()
         {
@@ -119,7 +504,9 @@ namespace Random_FloatingTool
             }
             else if (currectmode == "listmode")
             {
-                Result.Text = item[listmode_combobox.SelectedIndex, random.Next(0, itemCount[listmode_combobox.SelectedIndex])];
+                //Result.Text = item[listmode_combobox.SelectedIndex, random.Next(0, itemCount[listmode_combobox.SelectedIndex])];
+                selectedItemIndex = random.Next(0, currentList.Count);
+                Result.Text = currentList[selectedItemIndex].Name;
             }
         }
 
@@ -140,12 +527,13 @@ namespace Random_FloatingTool
         private void RandomButton_Click(object sender, RoutedEventArgs e)
         {
             _autoToggleTimer.Stop();
-            Random random = new Random();
-            if(nummode_min.Value>nummode_max.Value)
+            if (nummode_min.Value > nummode_max.Value)
             {
-                double? tmp = nummode_min.Value;
-                nummode_min.Value = nummode_max.Value;
-                nummode_max.Value = tmp;
+                (nummode_max.Value, nummode_min.Value) = (nummode_min.Value, nummode_max.Value);
+            }
+            if (currectmode == "listmode")
+            {
+                currentList = db.GetItemsByListId(lists[listmode_combobox.SelectedIndex].Id);
             }
             _flashTimer.Start();
             RandomButton.Visibility = Visibility.Hidden;
@@ -222,8 +610,13 @@ namespace Random_FloatingTool
             _autoToggleTimer.Start();
             Result_Side.Text = "被抽中的是:";
             logWriter.WriteLine(DateTime.Now.ToString() + " 被抽中的是:" + Result.Text);
+            if (currectmode == "listmode")
+            {
+                Item itemToUpdate = currentList[selectedItemIndex];
+                db.IncreaseUsageCount(currentList[selectedItemIndex].Id);
+            }
             StopButton.Visibility = Visibility.Hidden;
-            FinishButton.Visibility= Visibility.Visible;
+            FinishButton.Visibility = Visibility.Visible;
             FinishButton.Focus();
         }
 
@@ -262,6 +655,12 @@ namespace Random_FloatingTool
             logWriter.Flush();
             logWriter.Close();
             Application.Current.Shutdown();
+        }
+
+        public void UpdateListWithWeight()
+        {
+            int weightSum = lists[listmode_combobox.SelectedIndex].WeightSum;
+            currectListWithWeight
         }
     }
 }
