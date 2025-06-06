@@ -403,6 +403,7 @@ namespace Random_FloatingTool
         public DatabaseHelper db;
         public List<ListInfo> lists;
         public List<Item> currentList = new List<Item>();
+        public int weightSum;
         public Item[] currentListWithWeight;
 
         public ToolBox()
@@ -505,8 +506,8 @@ namespace Random_FloatingTool
             else if (currectmode == "listmode")
             {
                 //Result.Text = item[listmode_combobox.SelectedIndex, random.Next(0, itemCount[listmode_combobox.SelectedIndex])];
-                selectedItemIndex = random.Next(0, currentList.Count);
-                Result.Text = currentList[selectedItemIndex].Name;
+                selectedItemIndex = random.Next(0,weightSum);
+                Result.Text = currentListWithWeight[selectedItemIndex].Name;
             }
         }
 
@@ -534,6 +535,7 @@ namespace Random_FloatingTool
             if (currectmode == "listmode")
             {
                 currentList = db.GetItemsByListId(lists[listmode_combobox.SelectedIndex].Id);
+                UpdateListWithWeight();
             }
             _flashTimer.Start();
             RandomButton.Visibility = Visibility.Hidden;
@@ -612,8 +614,7 @@ namespace Random_FloatingTool
             logWriter.WriteLine(DateTime.Now.ToString() + " 被抽中的是:" + Result.Text);
             if (currectmode == "listmode")
             {
-                Item itemToUpdate = currentList[selectedItemIndex];
-                db.IncreaseUsageCount(currentList[selectedItemIndex].Id);
+                db.IncreaseUsageCount(currentListWithWeight[selectedItemIndex].Id);
             }
             StopButton.Visibility = Visibility.Hidden;
             FinishButton.Visibility = Visibility.Visible;
@@ -659,8 +660,17 @@ namespace Random_FloatingTool
 
         public void UpdateListWithWeight()
         {
-            int weightSum = lists[listmode_combobox.SelectedIndex].WeightSum;
-            currectListWithWeight
+            weightSum = lists[listmode_combobox.SelectedIndex].WeightSum;
+            currentListWithWeight = new Item[weightSum];
+            int pos= 0;
+            foreach (Item item in currentList)
+            {
+                for (int i = 0; i < item.Weight; i++)
+                {
+                    currentListWithWeight[pos] = item;
+                    pos++;
+                }
+            }
         }
     }
 }
