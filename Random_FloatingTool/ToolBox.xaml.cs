@@ -54,26 +54,41 @@ namespace Random_FloatingTool
 
             if (File.Exists(userFolder + appFolder + listPath))
             {
-                StreamReader listReader = new(userFolder + appFolder + listPath);
-                numOfList = Convert.ToInt16(listReader.ReadLine());//读取列表数
-                int groupCount;
-                for (groupCount = 0; groupCount < numOfList; groupCount++)
+                try
                 {
-                    int numOfItem;
-                    nameOfGroup[groupCount] = listReader.ReadLine();
-                    numOfItem = Convert.ToInt16(listReader.ReadLine());
-                    itemsInGroup[groupCount] = numOfItem;
-                    listmode_combobox.Items.Add(nameOfGroup[groupCount]);
-                    int itemReadingCount;
-                    for (itemReadingCount = 0; itemReadingCount < numOfItem; itemReadingCount++)
+                    StreamReader listReader = new(userFolder + appFolder + listPath);
+                    numOfList = Convert.ToInt16(listReader.ReadLine());//读取列表数
+                    int groupCount;
+                    for (groupCount = 0; groupCount < numOfList; groupCount++)
                     {
-                        item[groupCount, itemReadingCount] = listReader.ReadLine();
+                        int numOfItem;
+                        nameOfGroup[groupCount] = listReader.ReadLine();
+                        numOfItem = Convert.ToInt16(listReader.ReadLine());
+                        itemsInGroup[groupCount] = numOfItem;
+                        listmode_combobox.Items.Add(nameOfGroup[groupCount]);
+                        int itemReadingCount;
+                        for (itemReadingCount = 0; itemReadingCount < numOfItem; itemReadingCount++)
+                        {
+                            item[groupCount, itemReadingCount] = listReader.ReadLine();
+                        }
                     }
                 }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("列表文件读取错误，请检查列表文件是否正确。\n" + ex.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                    listmode_combobox.Items.Add("无列表文件");
+                    numOfList = 0;
+                    listmode_combobox.IsEnabled = false;
+                    RandomButton.IsEnabled = false;
+                }
+
             }
             else
             {
                 listmode_combobox.Items.Add("无列表文件");
+                numOfList = 0;
+                listmode_combobox.IsEnabled = false;
+                RandomButton.IsEnabled = false;
             }
 
             if(!File.Exists(userFolder+appFolder+logPath))
