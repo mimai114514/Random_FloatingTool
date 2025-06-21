@@ -109,6 +109,7 @@ namespace Random_FloatingTool
                 {
                     toolBox.Visibility = Visibility.Visible;
                     toolBox.Activate();
+                    toolBox.modeChange();
                 }
                 else
                 {

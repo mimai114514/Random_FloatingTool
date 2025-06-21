@@ -26,7 +26,7 @@ namespace Random_FloatingTool
     {
 
         public string currectmode = "listmode";
-
+        public bool isAnyListExist = true;
 
         public string userFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
         public string appFolder = "\\dev\\Random";
@@ -78,8 +78,7 @@ namespace Random_FloatingTool
                     MessageBox.Show("列表文件读取错误，请检查列表文件是否正确。\n" + ex.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                     listmode_combobox.Items.Add("无列表文件");
                     numOfList = 0;
-                    listmode_combobox.IsEnabled = false;
-                    RandomButton.IsEnabled = false;
+                    isAnyListExist = false;
                 }
 
             }
@@ -87,14 +86,17 @@ namespace Random_FloatingTool
             {
                 listmode_combobox.Items.Add("无列表文件");
                 numOfList = 0;
-                listmode_combobox.IsEnabled = false;
-                RandomButton.IsEnabled = false;
+                isAnyListExist = false;
             }
 
             if(!File.Exists(userFolder+appFolder+logPath))
             {
                 File.Create(userFolder + appFolder + logPath);
+                isAnyListExist = false;
             }
+
+            if(!isAnyListExist)
+                currectmode="nummode";
 
             modeChange();
             
@@ -193,12 +195,21 @@ namespace Random_FloatingTool
             {
                 nummode_show();
                 listmode_hide();
+                RandomButton.IsEnabled = true;
                 currectmode = "nummode";
             }
             else if (currectmode == "listmode")
             {
                 nummode_hide();
                 listmode_show();
+                if (isAnyListExist)
+                {
+                    RandomButton.IsEnabled=true;
+                }
+                else
+                {
+                    RandomButton.IsEnabled = false;
+                }
                 currectmode = "listmode";
             }
             RandomButton.Visibility = Visibility.Visible;
