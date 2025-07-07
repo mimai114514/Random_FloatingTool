@@ -18,6 +18,7 @@ using System.Windows.Threading;
 using System.Timers;
 using System.Data.SQLite;
 using System.Data.Entity.Core.Common;
+using System.Globalization;
 
 namespace Random_FloatingTool
 {
@@ -74,12 +75,26 @@ namespace Random_FloatingTool
                     FOREIGN KEY(ListId) REFERENCES Lists(Id)
                 );";
 
+                //创建日志表
+                const string createLogTable = @"
+                CREATE TABLE IF NOT EXISTS Logs (
+                    Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Time TEXT,
+                    ListId INTEGER NOT NULL,
+                    ItemId INTEGER NOT NULL
+                );";
+
                 using (var command = new SQLiteCommand(createListTable, connection))
                 {
                     command.ExecuteNonQuery();
                 }
 
                 using (var command = new SQLiteCommand(createItemsTable, connection))
+                {
+                    command.ExecuteNonQuery();
+                }
+
+                using (var command = new SQLiteCommand(createLogTable, connection))
                 {
                     command.ExecuteNonQuery();
                 }
@@ -160,7 +175,8 @@ namespace Random_FloatingTool
                                 Id = reader.GetInt32(0),
                                 Name = reader.GetString(1),
                                 UsageCount = reader.GetInt32(2),
-                                Weight = reader.GetInt32(3)
+                                Weight = reader.GetInt32(3),
+                                ListId = listId
                             });
                         }
                     }
@@ -360,9 +376,45 @@ namespace Random_FloatingTool
             }
         }
 
+        public void WriteLog(DateTime time, int listId, int itemId)
+        {
+            using (var connection = new SQLiteConnection($"Data Source={databasePath};Version=3;"))
+            {
+                connection.Open();
+                const string query = @"
+                INSERT INTO Logs (Time, ListId, ItemId) 
+                VALUES (@Time, @ListId, @ItemId)";
+                using (var command = new SQLiteCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@Time", TimeHelper.ToLocalTimeString(time));
+                    command.Parameters.AddWithValue("@ListId", listId);
+                    command.Parameters.AddWithValue("@ItemId", itemId);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+
     }
 
+    public static class TimeHelper
+    {
+        // 本地时间 → 数据库字符串
+        public static string ToLocalTimeString(this DateTime time)
+        {
+            return time.ToString("yyyy-MM-dd HH:mm:ss");
+        }
 
+        // 数据库字符串 → 本地时间
+        public static DateTime ParseLocalTime(string dbTimeString)
+        {
+            return DateTime.ParseExact(
+                dbTimeString,
+                "yyyy-MM-dd HH:mm:ss",
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.AssumeLocal
+            );
+        }
+    }
 
     // 数据模型类
     public class ListInfo
@@ -381,24 +433,23 @@ namespace Random_FloatingTool
         public string Name { get; set; }
         public int UsageCount { get; set; }
         public int Weight { get; set; }
-
         public int ListId { get; set; }
     }
     public partial class ToolBox : Window
     {
 
         public string currectmode = "listmode";
-
+        /*
         public string userFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
         public string appFolder = "\\dev\\Random";
         public string listPath = "\\list.txt";
         public string logPath = "\\log.txt";
-
+        */
         public int selectedItemIndex;
 
         public DispatcherTimer _flashTimer;//抽取项更新计时器
         public DispatcherTimer _autoToggleTimer;//自动折叠计时器
-        public StreamWriter logWriter;
+        //public StreamWriter logWriter;
 
         public DatabaseHelper db;
         public List<ListInfo> lists;
@@ -410,7 +461,7 @@ namespace Random_FloatingTool
         {
             InitializeComponent();
             InitializeTimer();
-            InitializeLogWriter();
+            //InitializeLogWriter();
 
             db = new DatabaseHelper();
             db.InitializeDatabase();
@@ -488,13 +539,13 @@ namespace Random_FloatingTool
             _autoToggleTimer.Tick += AutoToggle;
             _autoToggleTimer.Interval = TimeSpan.FromSeconds(12.5);
         }
-
+        /*
         public void InitializeLogWriter()
         {
             logWriter = new(userFolder + appFolder + logPath, true);
             logWriter.AutoFlush = true;
         }
-
+        */
         private void FlashTimer_Tick(object sender, EventArgs e)
         {
             Random random = new Random();
@@ -611,10 +662,12 @@ namespace Random_FloatingTool
             _flashTimer.Stop();
             _autoToggleTimer.Start();
             Result_Side.Text = "被抽中的是:";
-            logWriter.WriteLine(DateTime.Now.ToString() + " 被抽中的是:" + Result.Text);
+            //logWriter.WriteLine(DateTime.Now.ToString() + " 被抽中的是:" + Result.Text);
             if (currectmode == "listmode")
             {
                 db.IncreaseUsageCount(currentListWithWeight[selectedItemIndex].Id);
+                db.WriteLog(DateTime.Now, currentListWithWeight[selectedItemIndex].ListId, currentListWithWeight[selectedItemIndex].Id);
+                //logWriter.WriteLine(currentListWithWeight[selectedItemIndex].ListId.ToString()+";"+currentListWithWeight[selectedItemIndex].Id);
             }
             StopButton.Visibility = Visibility.Hidden;
             FinishButton.Visibility = Visibility.Visible;
@@ -653,8 +706,8 @@ namespace Random_FloatingTool
         {
             _autoToggleTimer.Stop();
             _flashTimer.Stop();
-            logWriter.Flush();
-            logWriter.Close();
+            //logWriter.Flush();
+            //logWriter.Close();
             Application.Current.Shutdown();
         }
 
