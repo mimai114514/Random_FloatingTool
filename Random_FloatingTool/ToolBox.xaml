@@ -10,13 +10,13 @@
         WindowStyle="None"
         AllowsTransparency="True"
         Background="#7A000000"
-        Width="230" Height="160"
+        Width="230" Height="170"
         Topmost="True" ResizeMode="NoResize" ShowInTaskbar="False" Loaded="Window_Loaded">
-    <Grid>
+    <Grid Margin="4">
         <Grid.RowDefinitions>
-            <RowDefinition Height="0.85*"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
 
         </Grid.RowDefinitions>
@@ -48,9 +48,9 @@
         <TextBlock x:Name="nummode_text_min" Text="最小值" Grid.Row ="1" Grid.Column="0" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="6,2,2,2" TextAlignment="Center" FontSize="18"/>
         <TextBlock x:Name="nummode_text_max" Text="最大值" Grid.Row ="2" Grid.Column="0" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="6,2,2,2" TextAlignment="Center" FontSize="18"/>
 
-        <Button x:Name="RandomButton" Content="抽取" Grid.Row="3" Grid.Column="1" Foreground="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="6" Padding="2" FontSize="18" BorderThickness="1" Click="RandomButton_Click"/>
-        <Button x:Name="StopButton" Content="停止" Grid.Row="3" Grid.Column="1" Foreground="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="6" Padding="2" FontSize="18" BorderThickness="1" Click="StopButton_Click" Visibility="Hidden"/>
-        <Button x:Name="FinishButton" Content="完成" Grid.Row="3" Grid.Column="1" Foreground="White" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Margin="6" Padding="2" FontSize="18" BorderThickness="1" Click="FinishButton_Click" Visibility="Hidden"/>
+        <Button x:Name="RandomButton" Content="抽取" Grid.Row="3" Grid.Column="1" Foreground="White" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="6" Padding="2" FontSize="18" BorderThickness="1" Click="RandomButton_Click"/>
+        <Button x:Name="StopButton" Content="停止" Grid.Row="3" Grid.Column="1" Foreground="White" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="6" Padding="2" FontSize="18" BorderThickness="1" Click="StopButton_Click" Visibility="Hidden"/>
+        <Button x:Name="FinishButton" Content="完成" Grid.Row="3" Grid.Column="1" Foreground="White" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="6" Padding="2" FontSize="18" BorderThickness="1" Click="FinishButton_Click" Visibility="Hidden"/>
 
         <TextBlock x:Name="Result" Grid.RowSpan="4" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Center" Foreground="White" Background="#00000000" FontSize="24"/>
         <TextBlock x:Name="Result_Side" Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="6" Foreground="White" Background="#00000000" FontSize="14" Visibility="Hidden"/>

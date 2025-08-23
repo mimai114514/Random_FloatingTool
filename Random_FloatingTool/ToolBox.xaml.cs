@@ -33,10 +33,16 @@ namespace Random_FloatingTool
         public string listPath = "\\list.txt";
         public string logPath = "\\log.txt";
 
+        /*
         public int numOfList;//列表数
         public int[] itemsInGroup = new int[110];//列表内项数
         public string[] nameOfGroup = new string[110];
         public string[,] item = new string[110, 1010];//内容列表
+        */
+
+        public int numOfList = 0;//列表数
+        public List<string> listName = new List<string>();//列表名称
+        public List<List<string>> listItems = new List<List<string>>();//列表内容
 
         public DispatcherTimer _flashTimer;
         public DispatcherTimer _autoToggleTimer;
@@ -62,15 +68,18 @@ namespace Random_FloatingTool
                     for (groupCount = 0; groupCount < numOfList; groupCount++)
                     {
                         int numOfItem;
-                        nameOfGroup[groupCount] = listReader.ReadLine();
+                        //nameOfGroup[groupCount] = listReader.ReadLine();
+                        string groupName = listReader.ReadLine();
+                        listName.Add(groupName);
+                        listmode_combobox.Items.Add(groupName);
                         numOfItem = Convert.ToInt16(listReader.ReadLine());
-                        itemsInGroup[groupCount] = numOfItem;
-                        listmode_combobox.Items.Add(nameOfGroup[groupCount]);
                         int itemReadingCount;
+                        List<string> items = new List<string>();
                         for (itemReadingCount = 0; itemReadingCount < numOfItem; itemReadingCount++)
                         {
-                            item[groupCount, itemReadingCount] = listReader.ReadLine();
+                            items.Add(listReader.ReadLine());
                         }
+                        listItems.Add(items);
                     }
                 }
                 catch (Exception ex)
@@ -121,7 +130,23 @@ namespace Random_FloatingTool
             }
             else if (currectmode == "listmode")
             {
-                Result.Text = item[listmode_combobox.SelectedIndex, random.Next(0, itemsInGroup[listmode_combobox.SelectedIndex])];
+                //Result.Text = item[listmode_combobox.SelectedIndex, random.Next(0, itemsInGroup[listmode_combobox.SelectedIndex])];
+                if (listmode_combobox.SelectedIndex >= 0 && listmode_combobox.SelectedIndex < listItems.Count)
+                {
+                    var items = listItems[listmode_combobox.SelectedIndex];
+                    if (items.Count > 0)
+                    {
+                        Result.Text = items[random.Next(0, items.Count)];
+                    }
+                    else
+                    {
+                        Result.Text = "列表为空";
+                    }
+                }
+                else
+                {
+                    Result.Text = "无效列表";
+                }
             }
         }
 
@@ -151,7 +176,7 @@ namespace Random_FloatingTool
             listmode_hide();
             Result.Visibility = Visibility.Visible;
             Result_Side.Visibility = Visibility.Visible;
-            Result_Side.Text = "被抽中的是..";
+            Result_Side.Text = "被抽中的是...";
         }
 
         public void nummode_hide()
