@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using System.Threading.Tasks;
 using System.Windows.Threading;
 using System.Timers;
+using System.Security.RightsManagement;
 
 namespace Random_FloatingTool
 {
@@ -27,6 +28,8 @@ namespace Random_FloatingTool
 
         public string currectmode = "listmode";
         public bool isAnyListExist = true;
+        public bool isDedupeOn = false;
+        public List<string> currentList = new List<string>();
 
         public string userFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
         public string appFolder = "\\dev\\Random";
@@ -131,12 +134,11 @@ namespace Random_FloatingTool
             else if (currectmode == "listmode")
             {
                 //Result.Text = item[listmode_combobox.SelectedIndex, random.Next(0, itemsInGroup[listmode_combobox.SelectedIndex])];
-                if (listmode_combobox.SelectedIndex >= 0 && listmode_combobox.SelectedIndex < listItems.Count)
+                if (listmode_combobox.SelectedIndex >= 0)
                 {
-                    var items = listItems[listmode_combobox.SelectedIndex];
-                    if (items.Count > 0)
+                    if (currentList.Count > 0)
                     {
-                        Result.Text = items[random.Next(0, items.Count)];
+                        Result.Text = currentList[random.Next(0, currentList.Count)];
                     }
                     else
                     {
@@ -201,14 +203,19 @@ namespace Random_FloatingTool
         {
             listmode_text.Visibility = Visibility.Visible;
             listmode_combobox.Visibility = Visibility.Visible;
-            
+            listmode_text_dedupe.Visibility= Visibility.Visible;
+            listmode_dedupe_switch.Visibility= Visibility.Visible;
+            listmode_item_count_text.Visibility= Visibility.Visible;
         }
 
         public void listmode_hide()
         {
             listmode_text.Visibility = Visibility.Hidden;
             listmode_combobox.Visibility = Visibility.Hidden;
-            
+            listmode_text_dedupe.Visibility = Visibility.Hidden;
+            listmode_dedupe_switch.Visibility = Visibility.Hidden;
+            listmode_item_count_text.Visibility = Visibility.Hidden;
+
         }
 
         public void modeChange()
@@ -258,6 +265,19 @@ namespace Random_FloatingTool
             logWriter.AutoFlush = true;
             logWriter.WriteLine(DateTime.Now.ToString() + " " +Result_Side.Text + Result.Text);
             logWriter.Close();
+            if(currectmode == "listmode" && isDedupeOn && currentList.Contains(Result.Text))
+            {
+                if(currentList.Count>1)
+                {
+                    currentList.Remove(Result.Text);
+                    updateItemCountText();
+                }
+                else
+                {
+                    currentList = new List<string>(listItems[listmode_combobox.SelectedIndex]);
+                    updateItemCountText();
+                }
+            }
             StopButton.Visibility = Visibility.Hidden;
             FinishButton.Visibility= Visibility.Visible;
             FinishButton.Focus();
@@ -295,5 +315,38 @@ namespace Random_FloatingTool
             Application.Current.Shutdown();
         }
 
+        private void listmode_dedupe_switch_Click(object sender, RoutedEventArgs e)
+        {
+            if(listmode_dedupe_switch.IsChecked == true)
+            {
+                isDedupeOn = true;
+                currentList = new List<string>(listItems[listmode_combobox.SelectedIndex]);
+                updateItemCountText();
+            }
+            else
+            {
+                isDedupeOn = false;
+                currentList = new List<string>(listItems[listmode_combobox.SelectedIndex]);
+                updateItemCountText();
+            }
+        }
+
+        private void listmode_combobox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            currentList = new List<string>(listItems[listmode_combobox.SelectedIndex]);
+            updateItemCountText();
+        }
+
+        private void updateItemCountText()
+        {
+            if(isDedupeOn)
+            {
+                listmode_item_count_text.Text = "还剩"+currentList.Count.ToString()+"项";
+            }
+            else
+            {
+                listmode_item_count_text.Text = "共" + currentList.Count.ToString() + "项";
+            }
+        }
     }
 }
