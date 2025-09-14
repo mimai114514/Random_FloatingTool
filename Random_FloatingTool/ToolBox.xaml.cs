@@ -225,6 +225,13 @@ namespace Random_FloatingTool
             Result_Side.Visibility = Visibility.Hidden;
             if (currectmode == "nummode")
             {
+                nummode_button.IsEnabled = false;
+                nummode_button.Foreground= Brushes.DarkGray;
+                mode_icon_num.Visibility= Visibility.Visible;
+                mode_icon_list.Visibility=Visibility.Collapsed;
+                mode_text.Text = "数字模式";
+                listmode_button.IsEnabled = true;
+                listmode_button.Foreground = Brushes.White;
                 nummode_show();
                 listmode_hide();
                 RandomButton.IsEnabled = true;
@@ -232,6 +239,13 @@ namespace Random_FloatingTool
             }
             else if (currectmode == "listmode")
             {
+                listmode_button.IsEnabled = false;
+                listmode_button.Foreground = Brushes.DarkGray;
+                mode_icon_num.Visibility = Visibility.Collapsed;
+                mode_icon_list.Visibility = Visibility.Visible;
+                mode_text.Text = "列表模式";
+                nummode_button.IsEnabled = true;
+                nummode_button.Foreground = Brushes.White;
                 nummode_hide();
                 listmode_show();
                 if (isAnyListExist)
@@ -347,6 +361,18 @@ namespace Random_FloatingTool
             {
                 listmode_item_count_text.Text = "共" + currentList.Count.ToString() + "项";
             }
+        }
+
+        private void nummode_button_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            currectmode = "nummode";
+            modeChange();
+        }
+
+        private void listmode_button_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            currectmode="listmode";
+            modeChange();
         }
     }
 }
