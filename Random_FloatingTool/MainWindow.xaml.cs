@@ -47,6 +47,8 @@ namespace Random_FloatingTool
                 }
             };
 
+            AutoStartManager.SetAutoStart(true);
+
             ToggleToolBox();
         }
 
@@ -166,6 +168,68 @@ namespace Random_FloatingTool
                 {
                     toolBox.Top = this.Top - toolBox.Height + this.Height;
                 }
+    public static class AutoStartManager
+    {
+        // 定义一个你的应用程序在注册表中的唯一名称
+        private const string AppName = "Random_FloatingTool";
+
+        /// <summary>
+        /// 设置或取消开机自启动
+        /// </summary>
+        /// <param name="isEnabled">true为设置，false为取消</param>
+        public static void SetAutoStart(bool isEnabled)
+        {
+            try
+            {
+                // 选择注册表根键
+                RegistryKey baseKey = Registry.CurrentUser;
+
+                // 打开 Run 键
+                // 第二个参数 true 表示可写
+                using (RegistryKey runKey = baseKey.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true))
+                {
+                    if (runKey == null)
+                    {
+                        MessageBox.Show("无法找到注册表 Run 键。", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    if (isEnabled)
+                    {
+                        // 获取当前执行文件的完整路径
+                        string executablePath = Assembly.GetEntryAssembly().Location;
+                        // 设置键值。如果已存在同名键，会覆盖它
+                        runKey.SetValue(AppName, executablePath);
+                    }
+                    else
+                    {
+                        // 如果键存在，则删除它
+                        if (runKey.GetValue(AppName) != null)
+                        {
+                            runKey.DeleteValue(AppName, false);
+                        }
+                    }
+                }
+            }
+            catch (UnauthorizedAccessException)
+            {
+                MessageBox.Show("权限不足，请以管理员身份运行程序来为所有用户设置自启动。", "权限错误", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"操作注册表时发生错误: {ex.Message}", "未知错误", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        /// <summary>
+        /// 检查当前是否已设置为自启动
+        /// </summary>
+        public static bool IsAutoStartEnabled()
+        {
+            RegistryKey baseKey = Registry.CurrentUser;
+            using (RegistryKey runKey = baseKey.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", false))
+            {
+                return runKey?.GetValue(AppName) != null;
             }
         }
     }
