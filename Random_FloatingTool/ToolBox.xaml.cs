@@ -50,11 +50,19 @@ namespace Random_FloatingTool
         public DispatcherTimer _flashTimer;
         public DispatcherTimer _autoToggleTimer;
 
+        public double screenCenterX, screenCenterY, screenHeight, screenWidth;
 
-        public ToolBox()
+        private MainWindow _mainWindow;
+
+        public ToolBox(MainWindow mainWindow)
         {
             InitializeComponent();
             InitializeTimer();
+
+            screenCenterX = SystemParameters.PrimaryScreenWidth / 2;
+            screenCenterY = SystemParameters.PrimaryScreenHeight / 2;
+            screenHeight = SystemParameters.PrimaryScreenHeight;
+            screenWidth = SystemParameters.PrimaryScreenWidth;
 
             if (!Directory.Exists(userFolder + appFolder))
             {
@@ -101,17 +109,17 @@ namespace Random_FloatingTool
                 isAnyListExist = false;
             }
 
-            if(!File.Exists(userFolder+appFolder+logPath))
+            if (!File.Exists(userFolder + appFolder + logPath))
             {
                 File.Create(userFolder + appFolder + logPath);
                 isAnyListExist = false;
             }
 
-            if(!isAnyListExist)
-                currectmode="nummode";
+            if (!isAnyListExist)
+                currectmode = "nummode";
 
+            _mainWindow = mainWindow;
             modeChange();
-            
         }
         private void InitializeTimer()
         {
@@ -258,6 +266,9 @@ namespace Random_FloatingTool
                 }
                 currectmode = "listmode";
             }
+
+            _mainWindow.Broadcast("mode:" + currectmode);//remote
+
             RandomButton.Visibility = Visibility.Visible;
             RandomButton.Focus();
             StopButton.Visibility = Visibility.Hidden;
@@ -369,10 +380,55 @@ namespace Random_FloatingTool
             modeChange();
         }
 
+        private void ToolBar_LocationChanged(object sender, EventArgs e)
+        {
+            //relocateMainWindow();
+        }
+
         private void listmode_button_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
             currectmode="listmode";
             modeChange();
+        }
+
+        private void ToolBar_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (e.LeftButton == MouseButtonState.Pressed)
+            {
+                this.DragMove();
+                relocateMainWindow();
+            }
+        }
+
+        public void relocateMainWindow()
+        {
+            //listmode_item_count_text.Text = (this.Left + this.Width / 2).ToString() + " " + screenCenterX.ToString();
+            //listmode_item_count_text.Text = this.WindowState.ToString();
+            double targetX, targetY;
+
+            if (this.Left+this.Width/2<=screenCenterX)
+            {
+                targetX = this.Left - _mainWindow.Width - 20 >= 0 ? this.Left - _mainWindow.Width - 20 : 0;
+            }
+            else
+            {
+                targetX = this.Left + this.Width + 20 <= screenWidth ? this.Left + this.Width + 20 : screenWidth - _mainWindow.Width;
+            }
+            
+
+            //listmode_item_count_text.Text = (this.Top + this.Height / 2).ToString();// +" "+ screenCenterY.ToString();
+            
+            if (this.Top+this.Height/2<= screenCenterY)
+            {
+                targetY = this.Top;
+            }
+            else
+            {
+                targetY=this.Top+this.Height-_mainWindow.Height;
+            }
+
+            _mainWindow.Left = targetX;
+            _mainWindow.Top = targetY;
         }
     }
 }

@@ -11,7 +11,7 @@
         AllowsTransparency="True"
         Background="#80000000"
         Width="230" Height="170"
-        Topmost="True" ResizeMode="NoResize" ShowInTaskbar="False" Loaded="Window_Loaded">
+        Topmost="True" ResizeMode="NoResize" ShowInTaskbar="False" Loaded="Window_Loaded" MouseMove="ToolBar_MouseMove" LocationChanged="ToolBar_LocationChanged">
     <Grid Margin="2">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
