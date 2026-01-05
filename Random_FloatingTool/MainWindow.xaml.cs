@@ -67,13 +67,20 @@ namespace Random_FloatingTool
         public double startX, startY;
         public bool isWindowToggled = false;
         public double centerX, centerY;
+        private static Mutex _mutex = null;
+
         public MainWindow()
         {
-            string processName = Process.GetCurrentProcess().ProcessName;
-            if (Process.GetProcessesByName(processName).Length > 1)
+            const string appName = "Random_FloatingTool_SingleInstance";
+            bool createdNew;
+            _mutex = new Mutex(true, appName, out createdNew);
+
+            if (!createdNew)
             {
                 Application.Current.Shutdown();
+                return;
             }
+
             InitializeComponent();
             _remoteControl = new RemoteControl();
             this.Opacity = 0.8;

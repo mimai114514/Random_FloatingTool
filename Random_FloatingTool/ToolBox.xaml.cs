@@ -64,33 +64,56 @@ namespace Random_FloatingTool
             screenHeight = SystemParameters.PrimaryScreenHeight;
             screenWidth = SystemParameters.PrimaryScreenWidth;
 
-            if (!Directory.Exists(userFolder + appFolder))
+            _mainWindow = mainWindow;
+            // modeChange will be called after data loading in Window_Loaded
+        }
+
+        private async Task LoadDataAsync()
+        {
+            await Task.Run(() =>
             {
-                Directory.CreateDirectory(userFolder + appFolder);
-            }
+                if (!Directory.Exists(userFolder + appFolder))
+                {
+                    Directory.CreateDirectory(userFolder + appFolder);
+                }
+            });
 
             if (File.Exists(userFolder + appFolder + listPath))
             {
                 try
                 {
-                    StreamReader listReader = new(userFolder + appFolder + listPath);
-                    numOfList = Convert.ToInt16(listReader.ReadLine());//读取列表数
-                    int groupCount;
-                    for (groupCount = 0; groupCount < numOfList; groupCount++)
+                    // Using StreamReader in a way that doesn't block UI for long,
+                    // but for simplicity and safety on UI updates, we read all lines then process,
+                    // or process in background and marshal back.
+                    // Since we populate UI elements (Items.Add), we need to be on UI thread or Dispatcher.
+                    // We can read file in background.
+
+                    string[] allLines = await File.ReadAllLinesAsync(userFolder + appFolder + listPath);
+
+                    if (allLines.Length > 0)
                     {
-                        int numOfItem;
-                        //nameOfGroup[groupCount] = listReader.ReadLine();
-                        string groupName = listReader.ReadLine();
-                        listName.Add(groupName);
-                        listmode_combobox.Items.Add(groupName);
-                        numOfItem = Convert.ToInt16(listReader.ReadLine());
-                        int itemReadingCount;
-                        List<string> items = new List<string>();
-                        for (itemReadingCount = 0; itemReadingCount < numOfItem; itemReadingCount++)
+                        int lineIndex = 0;
+                        numOfList = Convert.ToInt16(allLines[lineIndex++]);//读取列表数
+                        int groupCount;
+                        for (groupCount = 0; groupCount < numOfList; groupCount++)
                         {
-                            items.Add(listReader.ReadLine());
+                            int numOfItem;
+                            if (lineIndex >= allLines.Length) break;
+                            string groupName = allLines[lineIndex++];
+                            listName.Add(groupName);
+                            listmode_combobox.Items.Add(groupName);
+
+                            if (lineIndex >= allLines.Length) break;
+                            numOfItem = Convert.ToInt16(allLines[lineIndex++]);
+
+                            List<string> items = new List<string>();
+                            for (int itemReadingCount = 0; itemReadingCount < numOfItem; itemReadingCount++)
+                            {
+                                if (lineIndex >= allLines.Length) break;
+                                items.Add(allLines[lineIndex++]);
+                            }
+                            listItems.Add(items);
                         }
-                        listItems.Add(items);
                     }
                 }
                 catch (Exception ex)
@@ -100,7 +123,6 @@ namespace Random_FloatingTool
                     numOfList = 0;
                     isAnyListExist = false;
                 }
-
             }
             else
             {
@@ -109,17 +131,24 @@ namespace Random_FloatingTool
                 isAnyListExist = false;
             }
 
-            if (!File.Exists(userFolder + appFolder + logPath))
+            await Task.Run(() =>
             {
-                File.Create(userFolder + appFolder + logPath);
-                isAnyListExist = false;
-            }
+                if (!File.Exists(userFolder + appFolder + logPath))
+                {
+                    File.Create(userFolder + appFolder + logPath).Close(); // Ensure stream is closed
+                    isAnyListExist = false;
+                }
+            });
 
             if (!isAnyListExist)
                 currectmode = "nummode";
 
-            _mainWindow = mainWindow;
             modeChange();
+
+            if (listmode_combobox.Items.Count > 0)
+            {
+                listmode_combobox.SelectedItem = listmode_combobox.Items[0];
+            }
         }
         private void InitializeTimer()
         {
@@ -276,9 +305,9 @@ namespace Random_FloatingTool
         }
 
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
+        private async void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            listmode_combobox.SelectedItem = listmode_combobox.Items[0];
+            await LoadDataAsync();
         }
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
