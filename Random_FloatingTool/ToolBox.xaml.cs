@@ -113,15 +113,14 @@ namespace Random_FloatingTool
 
         private void FlashTimer_Tick(object sender, EventArgs e)
         {
-            Random random = new Random();
             if (currectmode == "nummode")
             {
-                Result.Text = random.Next(Convert.ToInt16(nummode_min.Value), Convert.ToInt16(nummode_max.Value)).ToString();
+                Result.Text = Random.Shared.Next(Convert.ToInt16(nummode_min.Value), Convert.ToInt16(nummode_max.Value) + 1).ToString();
 
             }
             else if (currectmode == "listmode")
             {
-                Result.Text = item[listmode_combobox.SelectedIndex, random.Next(0, itemsInGroup[listmode_combobox.SelectedIndex])];
+                Result.Text = item[listmode_combobox.SelectedIndex, Random.Shared.Next(0, itemsInGroup[listmode_combobox.SelectedIndex])];
             }
         }
 
@@ -142,7 +141,6 @@ namespace Random_FloatingTool
         private void RandomButton_Click(object sender, RoutedEventArgs e)
         {
             _autoToggleTimer.Stop();
-            Random random = new Random();
             _flashTimer.Start();
             RandomButton.Visibility = Visibility.Hidden;
             StopButton.Visibility = Visibility.Visible;
