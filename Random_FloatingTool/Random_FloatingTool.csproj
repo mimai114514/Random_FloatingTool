@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="WPF-UI" Version="4.0.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
