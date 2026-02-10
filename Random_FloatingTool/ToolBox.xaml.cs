@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
@@ -53,6 +53,7 @@ namespace Random_FloatingTool
         public double screenCenterX, screenCenterY, screenHeight, screenWidth;
 
         private MainWindow _mainWindow;
+        private DatabaseManager _dbManager;
 
         public ToolBox(MainWindow mainWindow)
         {
@@ -64,54 +65,52 @@ namespace Random_FloatingTool
             screenHeight = SystemParameters.PrimaryScreenHeight;
             screenWidth = SystemParameters.PrimaryScreenWidth;
 
-            if (!Directory.Exists(userFolder + appFolder))
+            string fullAppPath = userFolder + appFolder;
+            if (!Directory.Exists(fullAppPath))
             {
-                Directory.CreateDirectory(userFolder + appFolder);
+                Directory.CreateDirectory(fullAppPath);
             }
 
-            if (File.Exists(userFolder + appFolder + listPath))
+            _dbManager = new DatabaseManager(fullAppPath);
+            _dbManager.InitializeDatabase();
+
+            // Migrate logs if needed
+            string fullLogPath = fullAppPath + logPath;
+            try
             {
-                try
+                _dbManager.ImportLogsFromText(fullLogPath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("日志迁移失败: " + ex.Message, "警告", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+
+            // Load lists
+            try
+            {
+                listName = _dbManager.GetListNames();
+                listItems = _dbManager.GetAllListItems();
+                numOfList = listName.Count;
+
+                if (numOfList > 0)
                 {
-                    StreamReader listReader = new(userFolder + appFolder + listPath);
-                    numOfList = Convert.ToInt16(listReader.ReadLine());//读取列表数
-                    int groupCount;
-                    for (groupCount = 0; groupCount < numOfList; groupCount++)
+                    foreach (var name in listName)
                     {
-                        int numOfItem;
-                        //nameOfGroup[groupCount] = listReader.ReadLine();
-                        string groupName = listReader.ReadLine();
-                        listName.Add(groupName);
-                        listmode_combobox.Items.Add(groupName);
-                        numOfItem = Convert.ToInt16(listReader.ReadLine());
-                        int itemReadingCount;
-                        List<string> items = new List<string>();
-                        for (itemReadingCount = 0; itemReadingCount < numOfItem; itemReadingCount++)
-                        {
-                            items.Add(listReader.ReadLine());
-                        }
-                        listItems.Add(items);
+                        listmode_combobox.Items.Add(name);
                     }
+                    isAnyListExist = true;
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show("列表文件读取错误，请检查列表文件是否正确。\n" + ex.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                     listmode_combobox.Items.Add("无列表文件");
-                    numOfList = 0;
                     isAnyListExist = false;
                 }
-
             }
-            else
+            catch (Exception ex)
             {
+                MessageBox.Show("列表读取错误: " + ex.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
                 listmode_combobox.Items.Add("无列表文件");
                 numOfList = 0;
-                isAnyListExist = false;
-            }
-
-            if (!File.Exists(userFolder + appFolder + logPath))
-            {
-                File.Create(userFolder + appFolder + logPath);
                 isAnyListExist = false;
             }
 
@@ -142,7 +141,7 @@ namespace Random_FloatingTool
             else if (currectmode == "listmode")
             {
                 //Result.Text = item[listmode_combobox.SelectedIndex, random.Next(0, itemsInGroup[listmode_combobox.SelectedIndex])];
-                if (listmode_combobox.SelectedIndex >= 0)
+                if (listmode_combobox.SelectedIndex >= 0 && listmode_combobox.SelectedIndex < listItems.Count)
                 {
                     if (currentList.Count > 0)
                     {
@@ -155,6 +154,7 @@ namespace Random_FloatingTool
                 }
                 else
                 {
+                    // Case when "无列表文件" is selected or index out of range
                     Result.Text = "无效列表";
                 }
             }
@@ -278,7 +278,10 @@ namespace Random_FloatingTool
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            listmode_combobox.SelectedItem = listmode_combobox.Items[0];
+            if (listmode_combobox.Items.Count > 0)
+            {
+                listmode_combobox.SelectedItem = listmode_combobox.Items[0];
+            }
         }
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
@@ -286,10 +289,17 @@ namespace Random_FloatingTool
             _flashTimer.Stop();
             _autoToggleTimer.Start();
             Result_Side.Text = "被抽中的是:";
-            StreamWriter logWriter = new(userFolder + appFolder + logPath, true);
-            logWriter.AutoFlush = true;
-            logWriter.WriteLine(DateTime.Now.ToString() + " " +Result_Side.Text + Result.Text);
-            logWriter.Close();
+
+            try
+            {
+                _dbManager.AddLog(DateTime.Now.ToString(), Result_Side.Text + Result.Text);
+            }
+            catch (Exception ex)
+            {
+                // Optionally handle logging failure (e.g. debug output), but don't crash app
+                Debug.WriteLine("Logging failed: " + ex.Message);
+            }
+
             if(currectmode == "listmode" && isDedupeOn && currentList.Contains(Result.Text))
             {
                 if(currentList.Count>1)
@@ -299,7 +309,10 @@ namespace Random_FloatingTool
                 }
                 else
                 {
-                    currentList = new List<string>(listItems[listmode_combobox.SelectedIndex]);
+                    if (listmode_combobox.SelectedIndex >= 0 && listmode_combobox.SelectedIndex < listItems.Count)
+                    {
+                        currentList = new List<string>(listItems[listmode_combobox.SelectedIndex]);
+                    }
                     updateItemCountText();
                 }
             }
@@ -342,6 +355,8 @@ namespace Random_FloatingTool
 
         private void listmode_dedupe_switch_Click(object sender, RoutedEventArgs e)
         {
+            if (listmode_combobox.SelectedIndex < 0 || listmode_combobox.SelectedIndex >= listItems.Count) return;
+
             if(listmode_dedupe_switch.IsChecked == true)
             {
                 isDedupeOn = true;
@@ -358,6 +373,7 @@ namespace Random_FloatingTool
 
         private void listmode_combobox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (listmode_combobox.SelectedIndex < 0 || listmode_combobox.SelectedIndex >= listItems.Count) return;
             currentList = new List<string>(listItems[listmode_combobox.SelectedIndex]);
             updateItemCountText();
         }
