@@ -20,6 +20,7 @@
 
   <ItemGroup>
     <PackageReference Include="Fleck" Version="1.2.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="9.0.1" />
     <PackageReference Include="WPF-UI" Version="4.0.0" />
   </ItemGroup>
 

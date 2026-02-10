@@ -29,23 +29,17 @@ namespace Random_FloatingTool
         public string currectmode = "listmode";
         public bool isAnyListExist = true;
         public bool isDedupeOn = false;
-        public List<string> currentList = new List<string>();
+        public List<(int Id, string Content)> currentList = new List<(int, string)>();
 
         public string userFolder = Environment.GetFolderPath(Environment.SpecialFolder.Personal);
         public string appFolder = "\\dev\\Random";
-        public string listPath = "\\list.txt";
-        public string logPath = "\\log.txt";
+        public string dbFileName = "random.db";
 
-        /*
-        public int numOfList;//列表数
-        public int[] itemsInGroup = new int[110];//列表内项数
-        public string[] nameOfGroup = new string[110];
-        public string[,] item = new string[110, 1010];//内容列表
-        */
+        private DatabaseService _db;
 
         public int numOfList = 0;//列表数
-        public List<string> listName = new List<string>();//列表名称
-        public List<List<string>> listItems = new List<List<string>>();//列表内容
+        public List<(int Id, string Name)> listGroups = new List<(int, string)>();//列表组（含ID）
+        public List<List<(int Id, string Content)>> listItems = new List<List<(int, string)>>();//列表内容（含ID）
 
         public DispatcherTimer _flashTimer;
         public DispatcherTimer _autoToggleTimer;
@@ -64,54 +58,35 @@ namespace Random_FloatingTool
             screenHeight = SystemParameters.PrimaryScreenHeight;
             screenWidth = SystemParameters.PrimaryScreenWidth;
 
-            if (!Directory.Exists(userFolder + appFolder))
-            {
-                Directory.CreateDirectory(userFolder + appFolder);
-            }
+            // 初始化数据库
+            string dbPath = Path.Combine(userFolder, appFolder.TrimStart('\\'), dbFileName);
+            _db = new DatabaseService(dbPath);
 
-            if (File.Exists(userFolder + appFolder + listPath))
+            // 从数据库加载列表
+            try
             {
-                try
+                listGroups = _db.GetAllGroups();
+                numOfList = listGroups.Count;
+
+                if (numOfList > 0)
                 {
-                    StreamReader listReader = new(userFolder + appFolder + listPath);
-                    numOfList = Convert.ToInt16(listReader.ReadLine());//读取列表数
-                    int groupCount;
-                    for (groupCount = 0; groupCount < numOfList; groupCount++)
+                    foreach (var group in listGroups)
                     {
-                        int numOfItem;
-                        //nameOfGroup[groupCount] = listReader.ReadLine();
-                        string groupName = listReader.ReadLine();
-                        listName.Add(groupName);
-                        listmode_combobox.Items.Add(groupName);
-                        numOfItem = Convert.ToInt16(listReader.ReadLine());
-                        int itemReadingCount;
-                        List<string> items = new List<string>();
-                        for (itemReadingCount = 0; itemReadingCount < numOfItem; itemReadingCount++)
-                        {
-                            items.Add(listReader.ReadLine());
-                        }
-                        listItems.Add(items);
+                        listmode_combobox.Items.Add(group.Name);
+                        listItems.Add(_db.GetItemsByGroup(group.Id));
                     }
                 }
-                catch (Exception ex)
+                else
                 {
-                    MessageBox.Show("列表文件读取错误，请检查列表文件是否正确。\n" + ex.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
-                    listmode_combobox.Items.Add("无列表文件");
-                    numOfList = 0;
+                    listmode_combobox.Items.Add("无列表");
                     isAnyListExist = false;
                 }
-
             }
-            else
+            catch (Exception ex)
             {
-                listmode_combobox.Items.Add("无列表文件");
+                MessageBox.Show("数据库读取错误：\n" + ex.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+                listmode_combobox.Items.Add("无列表");
                 numOfList = 0;
-                isAnyListExist = false;
-            }
-
-            if (!File.Exists(userFolder + appFolder + logPath))
-            {
-                File.Create(userFolder + appFolder + logPath);
                 isAnyListExist = false;
             }
 
@@ -141,12 +116,12 @@ namespace Random_FloatingTool
             }
             else if (currectmode == "listmode")
             {
-                //Result.Text = item[listmode_combobox.SelectedIndex, random.Next(0, itemsInGroup[listmode_combobox.SelectedIndex])];
                 if (listmode_combobox.SelectedIndex >= 0)
                 {
                     if (currentList.Count > 0)
                     {
-                        Result.Text = currentList[random.Next(0, currentList.Count)];
+                        var item = currentList[random.Next(0, currentList.Count)];
+                        Result.Text = item.Content;
                     }
                     else
                     {
@@ -286,25 +261,53 @@ namespace Random_FloatingTool
             _flashTimer.Stop();
             _autoToggleTimer.Start();
             Result_Side.Text = "被抽中的是:";
-            StreamWriter logWriter = new(userFolder + appFolder + logPath, true);
-            logWriter.AutoFlush = true;
-            logWriter.WriteLine(DateTime.Now.ToString() + " " +Result_Side.Text + Result.Text);
-            logWriter.Close();
-            if(currectmode == "listmode" && isDedupeOn && currentList.Contains(Result.Text))
+
+            // 写入数据库日志
+            try
             {
-                if(currentList.Count>1)
+                if (currectmode == "nummode")
                 {
-                    currentList.Remove(Result.Text);
-                    updateItemCountText();
+                    if (int.TryParse(Result.Text, out int num))
+                    {
+                        _db.AddNumModeLog(num);
+                    }
                 }
-                else
+                else if (currectmode == "listmode" && listmode_combobox.SelectedIndex >= 0)
                 {
-                    currentList = new List<string>(listItems[listmode_combobox.SelectedIndex]);
-                    updateItemCountText();
+                    int groupId = listGroups[listmode_combobox.SelectedIndex].Id;
+                    // 查找抽中项的 ID
+                    var drawnItem = currentList.Find(x => x.Content == Result.Text);
+                    if (drawnItem.Id > 0)
+                    {
+                        _db.AddListModeLog(groupId, drawnItem.Id);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"日志写入错误: {ex.Message}");
+            }
+
+            // 去重逻辑
+            if (currectmode == "listmode" && isDedupeOn)
+            {
+                var matchItem = currentList.Find(x => x.Content == Result.Text);
+                if (matchItem.Id > 0)
+                {
+                    if (currentList.Count > 1)
+                    {
+                        currentList.Remove(matchItem);
+                        updateItemCountText();
+                    }
+                    else
+                    {
+                        currentList = new List<(int Id, string Content)>(listItems[listmode_combobox.SelectedIndex]);
+                        updateItemCountText();
+                    }
                 }
             }
             StopButton.Visibility = Visibility.Hidden;
-            FinishButton.Visibility= Visibility.Visible;
+            FinishButton.Visibility = Visibility.Visible;
             FinishButton.Focus();
         }
 
@@ -345,20 +348,20 @@ namespace Random_FloatingTool
             if(listmode_dedupe_switch.IsChecked == true)
             {
                 isDedupeOn = true;
-                currentList = new List<string>(listItems[listmode_combobox.SelectedIndex]);
+                currentList = new List<(int Id, string Content)>(listItems[listmode_combobox.SelectedIndex]);
                 updateItemCountText();
             }
             else
             {
                 isDedupeOn = false;
-                currentList = new List<string>(listItems[listmode_combobox.SelectedIndex]);
+                currentList = new List<(int Id, string Content)>(listItems[listmode_combobox.SelectedIndex]);
                 updateItemCountText();
             }
         }
 
         private void listmode_combobox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            currentList = new List<string>(listItems[listmode_combobox.SelectedIndex]);
+            currentList = new List<(int Id, string Content)>(listItems[listmode_combobox.SelectedIndex]);
             updateItemCountText();
         }
 
