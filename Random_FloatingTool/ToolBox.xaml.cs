@@ -59,7 +59,7 @@ namespace Random_FloatingTool
             screenWidth = SystemParameters.PrimaryScreenWidth;
 
             // 初始化数据库
-            string dbPath = Path.Combine(userFolder, appFolder.TrimStart('\\'), dbFileName);
+            string dbPath = System.IO.Path.Combine(userFolder, appFolder.TrimStart('\\'), dbFileName);
             _db = new DatabaseService(dbPath);
 
             // 从数据库加载列表
@@ -361,8 +361,11 @@ namespace Random_FloatingTool
 
         private void listmode_combobox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            currentList = new List<(int Id, string Content)>(listItems[listmode_combobox.SelectedIndex]);
-            updateItemCountText();
+            if (listmode_combobox.SelectedIndex >= 0 && listmode_combobox.SelectedIndex < listItems.Count)
+            {
+                currentList = new List<(int Id, string Content)>(listItems[listmode_combobox.SelectedIndex]);
+                updateItemCountText();
+            }
         }
 
         private void updateItemCountText()
