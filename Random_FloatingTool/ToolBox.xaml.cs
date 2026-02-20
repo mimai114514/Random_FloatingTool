@@ -434,5 +434,32 @@ namespace Random_FloatingTool
             _mainWindow.Left = targetX;
             _mainWindow.Top = targetY;
         }
+
+        private void desktop_button_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string baseDir = AppDomain.CurrentDomain.BaseDirectory;
+                string desktopExePath = System.IO.Path.GetFullPath(System.IO.Path.Combine(baseDir, "..", "Desktop", "random_desktop.exe"));
+                
+                if (System.IO.File.Exists(desktopExePath))
+                {
+                    Process.Start(new ProcessStartInfo
+                    {
+                        FileName = desktopExePath,
+                        UseShellExecute = true,
+                        WorkingDirectory = System.IO.Path.GetDirectoryName(desktopExePath)
+                    });
+                }
+                else
+                {
+                    MessageBox.Show($"找不到 Random Desktop 程序。\n期待路径：{desktopExePath}", "启动失败", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"启动 Random Desktop 失败: {ex.Message}", "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
     }
 }

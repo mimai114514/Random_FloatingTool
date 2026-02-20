@@ -55,9 +55,14 @@
 
         </Grid>
 
-        <ui:Button x:Name="close_button" Grid.Row="0" Grid.Column="1" Margin="4" Padding="4" HorizontalAlignment="Right" BorderThickness="0,0,0,0" MouseRightButtonUp="close_button_MouseRightButtonUp" Click="close_button_Click">
-            <ui:FontIcon FontFamily="Segoe MDL2 Assets"  Glyph="&#xE711;"/>
-        </ui:Button>
+        <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="4">
+            <ui:Button x:Name="desktop_button" Margin="0,0,4,0" Padding="4" BorderThickness="0,0,0,0" Click="desktop_button_Click" ToolTip="打开桌面版">
+                <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8A5;"/>
+            </ui:Button>
+            <ui:Button x:Name="close_button" Margin="0" Padding="4" BorderThickness="0,0,0,0" MouseRightButtonUp="close_button_MouseRightButtonUp" Click="close_button_Click" ToolTip="隐藏面板">
+                <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE711;"/>
+            </ui:Button>
+        </StackPanel>
         
         <TextBlock x:Name="nummode_text_min" Text="最小值" Grid.Row ="1" Grid.Column="0" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="8,2,2,2" TextAlignment="Center" FontSize="18"/>
         <TextBlock x:Name="nummode_text_max" Text="最大值" Grid.Row ="2" Grid.Column="0" Foreground="White" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="8,2,2,2" TextAlignment="Center" FontSize="18"/>
