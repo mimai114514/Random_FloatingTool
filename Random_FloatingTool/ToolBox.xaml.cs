@@ -242,8 +242,6 @@ namespace Random_FloatingTool
                 currectmode = "listmode";
             }
 
-            _mainWindow.Broadcast("mode:" + currectmode);//remote
-
             RandomButton.Visibility = Visibility.Visible;
             RandomButton.Focus();
             StopButton.Visibility = Visibility.Hidden;

@@ -61,8 +61,6 @@ namespace Random_FloatingTool
             UnregisterHotKey(handle, HOTKEY_ID);
         }
 
-        private readonly RemoteControl _remoteControl;
-
         public ToolBox toolBox;
         public double startX, startY;
         public bool isWindowToggled = false;
@@ -70,17 +68,11 @@ namespace Random_FloatingTool
         public MainWindow()
         {
             InitializeComponent();
-            _remoteControl = new RemoteControl();
             this.Opacity = 0.8;
             this.Left = 100;
             this.Top = SystemParameters.PrimaryScreenHeight - this.Height - 250;
             centerX = SystemParameters.PrimaryScreenWidth / 2;
             centerY = SystemParameters.PrimaryScreenHeight / 2;
-
-            //remote control
-
-            this.Loaded += (s, e) => _remoteControl.Start();
-            this.Closing += (s, e) => _remoteControl.Stop();
         }
 
         public void ToggleToolBox()
@@ -166,18 +158,6 @@ namespace Random_FloatingTool
                 {
                     toolBox.Top = this.Top - toolBox.Height + this.Height;
                 }
-            }
-        }
-
-        public void Broadcast(string message)
-        {
-            try
-            {
-                _remoteControl.Broadcast(message);
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Broadcast error: {ex.Message}");
             }
         }
 
