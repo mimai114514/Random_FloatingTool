@@ -69,11 +69,6 @@ namespace Random_FloatingTool
         public double centerX, centerY;
         public MainWindow()
         {
-            string processName = Process.GetCurrentProcess().ProcessName;
-            if (Process.GetProcessesByName(processName).Length > 1)
-            {
-                Application.Current.Shutdown();
-            }
             InitializeComponent();
             _remoteControl = new RemoteControl();
             this.Opacity = 0.8;
@@ -184,6 +179,39 @@ namespace Random_FloatingTool
             {
                 Debug.WriteLine($"Broadcast error: {ex.Message}");
             }
+        }
+
+        public void ShowToolBox()
+        {
+            // 如果工具箱未显示或被隐藏，则显示它
+            if (toolBox == null || toolBox.Visibility != Visibility.Visible)
+            {
+                ToggleToolBox();
+            }
+            // 确保工具箱在最前
+            if (toolBox != null)
+            {
+                toolBox.Activate();
+                toolBox.Topmost = true;
+                toolBox.Topmost = false;
+                toolBox.Focus();
+            }
+        }
+
+        public void EnsureMainWindowVisible()
+        {
+            if (this.Visibility != Visibility.Visible)
+            {
+                this.Show();
+            }
+            if (this.WindowState == WindowState.Minimized)
+            {
+                this.WindowState = WindowState.Normal;
+            }
+            this.Activate();
+            this.Topmost = true;
+            this.Topmost = false;
+            this.Focus();
         }
     }
     public static class AutoStartManager
