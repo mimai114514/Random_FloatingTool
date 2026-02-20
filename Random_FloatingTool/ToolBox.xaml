@@ -57,7 +57,7 @@
 
         <StackPanel Grid.Row="0" Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="4">
             <ui:Button x:Name="desktop_button" Margin="0,0,4,0" Padding="4" BorderThickness="0,0,0,0" Click="desktop_button_Click" ToolTip="打开桌面版">
-                <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8A5;"/>
+                <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE8A7;"/>
             </ui:Button>
             <ui:Button x:Name="close_button" Margin="0" Padding="4" BorderThickness="0,0,0,0" MouseRightButtonUp="close_button_MouseRightButtonUp" Click="close_button_Click" ToolTip="隐藏面板">
                 <ui:FontIcon FontFamily="Segoe MDL2 Assets" Glyph="&#xE711;"/>
