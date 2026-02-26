@@ -69,6 +69,7 @@ namespace Random_FloatingTool
                     FOREIGN KEY (list_id) REFERENCES lists(id),
                     FOREIGN KEY (item_id) REFERENCES list_items(id)
                 );
+                PRAGMA user_version = 1;
             ";
             cmd.ExecuteNonQuery();
         }
