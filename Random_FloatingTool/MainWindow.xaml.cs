@@ -170,26 +170,8 @@ namespace Random_FloatingTool
             if (toolBox != null)
             {
                 toolBox.Activate();
-                toolBox.Topmost = true;
-                toolBox.Topmost = false;
                 toolBox.Focus();
             }
-        }
-
-        public void EnsureMainWindowVisible()
-        {
-            if (this.Visibility != Visibility.Visible)
-            {
-                this.Show();
-            }
-            if (this.WindowState == WindowState.Minimized)
-            {
-                this.WindowState = WindowState.Normal;
-            }
-            this.Activate();
-            this.Topmost = true;
-            this.Topmost = false;
-            this.Focus();
         }
     }
 }

@@ -73,7 +73,6 @@ namespace Random_FloatingTool
                                     var mainWindow = Application.Current.Windows.OfType<MainWindow>().FirstOrDefault();
                                     if (mainWindow != null)
                                     {
-                                        mainWindow.EnsureMainWindowVisible();
                                         mainWindow.ShowToolBox();
                                     }
                                 });
