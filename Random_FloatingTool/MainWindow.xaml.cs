@@ -18,7 +18,7 @@ namespace Random_FloatingTool
 
     public partial class MainWindow : Window
     {
-        private ComponentDispatcherThreadPreprocessMessageEventHandler _hotKeyHandler;
+        private ThreadMessageEventHandler _hotKeyHandler;
         //键盘热键相关
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         private static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
