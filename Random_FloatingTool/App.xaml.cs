@@ -26,6 +26,7 @@ namespace Random_FloatingTool
             this.DispatcherUnhandledException += App_DispatcherUnhandledException;
             // 捕获非 UI 线程未处理异常
             AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            this.Exit += App_Exit;
         }
 
         protected override void OnStartup(StartupEventArgs e)
@@ -130,6 +131,12 @@ namespace Random_FloatingTool
                 msg += $"\n\n内部错误:\n{ex.InnerException.Message}\n{ex.InnerException.StackTrace}";
             }
             MessageBox.Show(msg, "程序启动崩溃诊断", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        private void App_Exit(object sender, ExitEventArgs e)
+        {
+            _mutex?.ReleaseMutex();
+            _mutex?.Dispose();
         }
     }
 }

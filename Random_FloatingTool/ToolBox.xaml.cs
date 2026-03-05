@@ -13,7 +13,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using System.Threading.Tasks;
 using System.Windows.Threading;
 using System.Timers;
 using System.Security.RightsManagement;
@@ -25,8 +24,15 @@ namespace Random_FloatingTool
     /// </summary>
     public partial class ToolBox : Window
     {
+        private enum DrawMode
+        {
+            Number,
+            List
+        }
 
-        public string currectmode = "listmode";
+        private readonly Random _random = new Random();
+
+        private DrawMode _currentMode = DrawMode.List;
         public bool isAnyListExist = true;
         public bool isDedupeOn = false;
         public List<(int Id, string Content)> currentList = new List<(int, string)>();
@@ -91,7 +97,7 @@ namespace Random_FloatingTool
             }
 
             if (!isAnyListExist)
-                currectmode = "nummode";
+                _currentMode = DrawMode.Number;
 
             _mainWindow = mainWindow;
             modeChange();
@@ -108,19 +114,26 @@ namespace Random_FloatingTool
 
         private void FlashTimer_Tick(object sender, EventArgs e)
         {
-            Random random = new Random();
-            if (currectmode == "nummode")
+            if (_currentMode == DrawMode.Number)
             {
-                Result.Text = random.Next(Convert.ToInt16(nummode_min.Value), Convert.ToInt16(nummode_max.Value)).ToString();
+                int min = Convert.ToInt32(nummode_min.Value);
+                int max = Convert.ToInt32(nummode_max.Value);
+
+                if (min > max)
+                {
+                    (min, max) = (max, min);
+                }
+
+                Result.Text = _random.Next(min, max + 1).ToString();
 
             }
-            else if (currectmode == "listmode")
+            else if (_currentMode == DrawMode.List)
             {
                 if (listmode_combobox.SelectedIndex >= 0)
                 {
                     if (currentList.Count > 0)
                     {
-                        var item = currentList[random.Next(0, currentList.Count)];
+                        var item = currentList[_random.Next(0, currentList.Count)];
                         Result.Text = item.Content;
                     }
                     else
@@ -152,7 +165,6 @@ namespace Random_FloatingTool
         private void RandomButton_Click(object sender, RoutedEventArgs e)
         {
             _autoToggleTimer.Stop();
-            Random random = new Random();
             _flashTimer.Start();
             RandomButton.Visibility = Visibility.Hidden;
             StopButton.Visibility = Visibility.Visible;
@@ -206,7 +218,7 @@ namespace Random_FloatingTool
             _flashTimer.Stop();
             Result.Visibility = Visibility.Hidden;
             Result_Side.Visibility = Visibility.Hidden;
-            if (currectmode == "nummode")
+            if (_currentMode == DrawMode.Number)
             {
                 nummode_button.IsEnabled = false;
                 nummode_button.Foreground= Brushes.DarkGray;
@@ -218,9 +230,9 @@ namespace Random_FloatingTool
                 nummode_show();
                 listmode_hide();
                 RandomButton.IsEnabled = true;
-                currectmode = "nummode";
+                _currentMode = DrawMode.Number;
             }
-            else if (currectmode == "listmode")
+            else if (_currentMode == DrawMode.List)
             {
                 listmode_button.IsEnabled = false;
                 listmode_button.Foreground = Brushes.DarkGray;
@@ -239,7 +251,7 @@ namespace Random_FloatingTool
                 {
                     RandomButton.IsEnabled = false;
                 }
-                currectmode = "listmode";
+                _currentMode = DrawMode.List;
             }
 
             RandomButton.Visibility = Visibility.Visible;
@@ -251,7 +263,10 @@ namespace Random_FloatingTool
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            listmode_combobox.SelectedItem = listmode_combobox.Items[0];
+            if (listmode_combobox.Items.Count > 0)
+            {
+                listmode_combobox.SelectedItem = listmode_combobox.Items[0];
+            }
         }
 
         private void StopButton_Click(object sender, RoutedEventArgs e)
@@ -263,14 +278,16 @@ namespace Random_FloatingTool
             // 写入数据库日志
             try
             {
-                if (currectmode == "nummode")
+                if (_currentMode == DrawMode.Number)
                 {
                     if (int.TryParse(Result.Text, out int num))
                     {
                         _db.AddNumModeLog(num);
                     }
                 }
-                else if (currectmode == "listmode" && listmode_combobox.SelectedIndex >= 0)
+                else if (_currentMode == DrawMode.List &&
+                         listmode_combobox.SelectedIndex >= 0 &&
+                         listmode_combobox.SelectedIndex < listGroups.Count)
                 {
                     int groupId = listGroups[listmode_combobox.SelectedIndex].Id;
                     // 查找抽中项的 ID
@@ -287,7 +304,7 @@ namespace Random_FloatingTool
             }
 
             // 去重逻辑
-            if (currectmode == "listmode" && isDedupeOn)
+            if (_currentMode == DrawMode.List && isDedupeOn)
             {
                 var matchItem = currentList.Find(x => x.Content == Result.Text);
                 if (matchItem.Id > 0)
@@ -316,18 +333,6 @@ namespace Random_FloatingTool
             modeChange();
         }
 
-        private void nummode_button_Click(object sender, RoutedEventArgs e)
-        {
-            currectmode = "nummode";
-            modeChange();
-        }
-
-        private void listmode_button_Click(object sender, RoutedEventArgs e)
-        {
-            currectmode = "listmode";
-            modeChange();
-        }
-
 
         private void close_button_Click(object sender, RoutedEventArgs e)
         {
@@ -343,6 +348,11 @@ namespace Random_FloatingTool
 
         private void listmode_dedupe_switch_Click(object sender, RoutedEventArgs e)
         {
+            if (listmode_combobox.SelectedIndex < 0 || listmode_combobox.SelectedIndex >= listItems.Count)
+            {
+                return;
+            }
+
             if(listmode_dedupe_switch.IsChecked == true)
             {
                 isDedupeOn = true;
@@ -380,7 +390,7 @@ namespace Random_FloatingTool
 
         private void nummode_button_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            currectmode = "nummode";
+            _currentMode = DrawMode.Number;
             modeChange();
         }
 
@@ -391,7 +401,7 @@ namespace Random_FloatingTool
 
         private void listmode_button_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            currectmode="listmode";
+            _currentMode = DrawMode.List;
             modeChange();
         }
 
@@ -433,6 +443,13 @@ namespace Random_FloatingTool
 
             _mainWindow.Left = targetX;
             _mainWindow.Top = targetY;
+        }
+
+        private void ToolBar_Closed(object sender, EventArgs e)
+        {
+            _flashTimer?.Stop();
+            _autoToggleTimer?.Stop();
+            _db?.Dispose();
         }
 
         private void desktop_button_Click(object sender, RoutedEventArgs e)
