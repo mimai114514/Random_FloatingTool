@@ -18,6 +18,7 @@ namespace Random_FloatingTool
 
     public partial class MainWindow : Window
     {
+        private ThreadMessageEventHandler _hotKeyHandler;
         //键盘热键相关
         [System.Runtime.InteropServices.DllImport("user32.dll")]
         private static extern bool RegisterHotKey(IntPtr hWnd, int id, uint fsModifiers, uint vk);
@@ -41,7 +42,7 @@ namespace Random_FloatingTool
             }
 
 
-            ComponentDispatcher.ThreadPreprocessMessage += (ref MSG msg, ref bool handled) =>
+            _hotKeyHandler = (ref MSG msg, ref bool handled) =>
             {
                 if (msg.message == WM_HOTKEY && (int)msg.wParam == HOTKEY_ID)
                 {
@@ -49,6 +50,7 @@ namespace Random_FloatingTool
                     toolBox.RandomButton.Focus();  //将焦点设为抽取按钮，方便键盘操作
                 }
             };
+            ComponentDispatcher.ThreadPreprocessMessage += _hotKeyHandler;
 
             ToggleToolBox();
         }
@@ -57,6 +59,10 @@ namespace Random_FloatingTool
         {
             IntPtr handle = new WindowInteropHelper(this).Handle;
             UnregisterHotKey(handle, HOTKEY_ID);
+            if (_hotKeyHandler != null)
+            {
+                ComponentDispatcher.ThreadPreprocessMessage -= _hotKeyHandler;
+            }
         }
 
         public ToolBox toolBox;
